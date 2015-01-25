@@ -15,6 +15,10 @@ module.exports = {
   		defaultsTo: 'new',
   		required: true
   	},
+    paid: {
+      type: 'boolean',
+      defaultsTo: false
+    },
   	customer: {
   		model: 'Customer'
   	},

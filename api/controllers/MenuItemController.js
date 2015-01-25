@@ -18,13 +18,13 @@ module.exports = {
 
 
   /**
-   * `MenuItemController.delete()`
+   * `MenuItemController.destroy()`
    */
-  /*delete: function (req, res) {
-    return res.json({
-      todo: 'delete() is not implemented yet!'
+  destroy: function (req, res) {
+    MenuItem.destroy({id: req.param('id')}).exec(function() {
+      res.redirect('/menu');
     });
-  },*/
+  },
 
 
   /**

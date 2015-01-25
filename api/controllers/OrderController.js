@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-	
+
 
 
   /**
@@ -65,6 +65,12 @@ module.exports = {
   serve: function (req, res) {
     return res.json({
       todo: 'serve() is not implemented yet!'
+    });
+  },
+
+  pay: function (req, res) {
+    return res.json({
+      todo: 'pay() is not implemented yet!'
     });
   }
 };

@@ -1,7 +1,4 @@
 <div class="container-fluid">
-  <div class="page-header">
-    <h1>Menu</h1>
-  </div>
   <div class="row">
     <p>
       <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#menuAdd">
@@ -48,12 +45,17 @@
             <th>Shortname</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Operations</th>
           </tr>
           <% entrees.forEach(function(entree) { %>
           <tr>
             <td><%= entree.shortname %></td>
             <td><%= entree.name %></td>
             <td>$<%= entree.price %></td>
+            <td>
+              <a href="/menuitem/modify/<%= entree.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/<%= entree.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
           </tr>
           <% }) %>
         </table>
@@ -73,12 +75,17 @@
             <th>Shortname</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Operations</th>
           </tr>
           <% mains.forEach(function(main) { %>
           <tr>
             <td><%= main.shortname %></td>
             <td><%= main.name %></td>
             <td>$<%= main.price %></td>
+            <td>
+              <a href="/menuitem/modify/<%= main.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/<%= main.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
           </tr>
           <% }) %>
         </table>
@@ -98,12 +105,17 @@
             <th>Shortname</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Operations</th>
           </tr>
           <% sides.forEach(function(side) { %>
           <tr>
             <td><%= side.shortname %></td>
             <td><%= side.name %></td>
             <td>$<%= side.price %></td>
+            <td>
+              <a href="/menuitem/modify/<%= side.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/<%= side.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
           </tr>
           <% }) %>
         </table>
@@ -123,12 +135,17 @@
             <th>Shortname</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Operations</th>
           </tr>
           <% deserts.forEach(function(desert) { %>
           <tr>
             <td><%= desert.shortname %></td>
             <td><%= desert.name %></td>
             <td>$<%= desert.price %></td>
+            <td>
+              <a href="/menuitem/modify/<%= desert.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/<%= desert.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
           </tr>
           <% }) %>
         </table>
@@ -148,12 +165,17 @@
             <th>Shortname</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Operations</th>
           </tr>
           <% drinks.forEach(function(drink) { %>
           <tr>
             <td><%= drink.shortname %></td>
             <td><%= drink.name %></td>
             <td>$<%= drink.price %></td>
+            <td>
+              <a href="/menuitem/modify/<%= drink.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/<%= drink.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
           </tr>
           <% }) %>
         </table>
