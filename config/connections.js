@@ -66,15 +66,6 @@ module.exports.connections = {
     database: 'maidcafedb'*/
   },
 
-  mongodbdev: {
-    adapter: 'sails-mongo',
-    host: 'localhost',
-    port: 27017,
-    user: '',
-    password: '',
-    database: 'maidcafedb'
-  },
-
   /***************************************************************************
   *                                                                          *
   * PostgreSQL is another officially supported relational database.          *
