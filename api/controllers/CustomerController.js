@@ -6,15 +6,15 @@
  */
 
 module.exports = {
-	
+
 
 
   /**
-   * `CustomerController.add()`
+   * `CustomerController.create()`
    */
-  add: function (req, res) {
-    return res.json({
-      todo: 'add() is not implemented yet!'
+  create: function (req, res) {
+    Customer.create(req.body).exec(function(err,res){
+      res.redirect('/customers');
     });
   },
 
@@ -28,6 +28,18 @@ module.exports = {
     });
   },
 
+  /**
+   * `CustomerController.list()`
+   */
+  list: function (req, res) {
+    Customer.find().exec(function(err, customers) {
+      if(err) return res.serverError(err);
+
+      return res.view({
+        customers: customers
+      });
+    });
+  },
 
   /**
    * `CustomerController.checkout()`

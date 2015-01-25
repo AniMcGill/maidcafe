@@ -42,6 +42,18 @@ module.exports.routes = {
   'post /menu/create': {
     controller: 'MenuItemController',
     action: 'create'
+  },
+  'get /customers': {
+    controller: 'CustomerController',
+    action: 'list'
+  },
+  'post /customer/create': {
+    controller: 'CustomerController',
+    action: 'create'
+  },
+  'post /customer/checkout': {
+    controller: 'CustomerController',
+    action: 'checkout'
   }
 
   /***************************************************************************

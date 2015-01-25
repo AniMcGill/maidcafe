@@ -1,36 +1,164 @@
-<div class="page-header">
-  <h1>Menu</h1>
-</div>
-<div class="top">
-  <p>
-    <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#menuAdd" aria-expanded="false" aria-controls="menuAdd">
-      <span class="glyphicon glyphicon-plus"></span>
-    </button>
-  </p>
+<div class="container-fluid">
+  <div class="page-header">
+    <h1>Menu</h1>
+  </div>
+  <div class="row">
+    <p>
+      <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#menuAdd">
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
+    </p>
 
-  <div class="collapse" id="menuAdd">
-    <div class="well">
-      <form method="post" action="/menu/create" class="form-inline">
-        <label for="menuName">Name</label>
-        <input type="text" class="form-control" id="menuName" name="name" required>
+    <div class="collapse" id="menuAdd">
+      <div class="well">
+        <form method="post" action="/menu/create" class="form-inline">
+          <label for="menuName">Name</label>
+          <input type="text" class="form-control" id="menuName" name="name" required>
 
-        <label for="menuShortName">Shortname</label>
-        <input type="text" class="form-control" id="menuShortName" name="shortname" placeholder="ex: M01" required>
+          <label for="menuShortName">Shortname</label>
+          <input type="text" class="form-control" id="menuShortName" name="shortname" placeholder="ex: M01" required>
 
-        <label for="menuCategory">Category</label>
-        <select id="menuCategory" name="category" class="form-control" required>
-          <option value="entree">Entrée</option>
-          <option value="main">Main</option>
-          <option value="side">Side</option>
-          <option value="desert">Desert</option>
-          <option value="drink">Drink</option>
-        </select>
+          <label for="menuCategory">Category</label>
+          <select id="menuCategory" name="category" class="form-control" required>
+            <option value="entree">Entrée</option>
+            <option value="main">Main</option>
+            <option value="side">Side</option>
+            <option value="desert">Desert</option>
+            <option value="drink">Drink</option>
+          </select>
 
-        <label for="menuPrice">Price</label>
-        <input type="number" class="form-control" min="0" step="any" id="menuPrice" name="price" required>
+          <label for="menuPrice">Price</label>
+          <input type="number" class="form-control" min="0" step="any" id="menuPrice" name="price" required>
 
-        <button type="submit" class="btn btn-default" id="menuCreateButton">Add</button>
-      </form>
+          <button type="submit" class="btn btn-default">Add</button>
+        </form>
+      </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><a data-toggle="collapse" href="#entreePanel">Entrees</a></div>
+      <div class="panel-body collapse in" id="entreePanel">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+          <% entrees.forEach(function(entree) { %>
+          <tr>
+            <td><%= entree.shortname %></td>
+            <td><%= entree.name %></td>
+            <td>$<%= entree.price %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><a data-toggle="collapse" href="#mainPanel">Mains</a></div>
+      <div class="panel-body collapse in" id="mainPanel">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+          <% mains.forEach(function(main) { %>
+          <tr>
+            <td><%= main.shortname %></td>
+            <td><%= main.name %></td>
+            <td>$<%= main.price %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><a data-toggle="collapse" href="#sidePanel">Sides</a></div>
+      <div class="panel-body collapse in" id="sidePanel">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+          <% sides.forEach(function(side) { %>
+          <tr>
+            <td><%= side.shortname %></td>
+            <td><%= side.name %></td>
+            <td>$<%= side.price %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><a data-toggle="collapse" href="#desertPanel">Deserts</a></div>
+      <div class="panel-body collapse in" id="desertPanel">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+          <% deserts.forEach(function(desert) { %>
+          <tr>
+            <td><%= desert.shortname %></td>
+            <td><%= desert.name %></td>
+            <td>$<%= desert.price %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-heading"><a data-toggle="collapse" href="#drinkPanel">Drinks</a></div>
+      <div class="panel-body collapse in" id="drinkPanel">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+          <% drinks.forEach(function(drink) { %>
+          <tr>
+            <td><%= drink.shortname %></td>
+            <td><%= drink.name %></td>
+            <td>$<%= drink.price %></td>
+          </tr>
+          <% }) %>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -12,7 +12,7 @@ module.exports = {
    */
   create: function (req, res) {
     MenuItem.create(req.body).exec(function(err, item) {
-      res.end(JSON.stringify(item));
+      res.redirect('/menu');
     });
   },
 
@@ -71,13 +71,7 @@ module.exports = {
           drinks: async_data.drinks
         });
     });
-    /*MenuItem.find().exec(function (err, menuitems){
-      if(err) return res.serverError(err);
 
-      return res.view({
-        menuItems: menuitems
-      });
-    });*/
   }
 };
 
