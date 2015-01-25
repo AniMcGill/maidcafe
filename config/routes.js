@@ -34,6 +34,14 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
+  },
+  'get /menu': {
+    controller: 'MenuItemController',
+    action: 'menu'
+  },
+  'post /menu/create': {
+    controller: 'MenuItemController',
+    action: 'create'
   }
 
   /***************************************************************************

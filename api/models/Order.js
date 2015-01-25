@@ -11,7 +11,7 @@ module.exports = {
   	notes: 'text',
   	state: {
   		type: 'string',
-  		enum: ['new', 'preparing', 'ready'],
+  		enum: ['new', 'preparing', 'ready', 'served'],
   		defaultsTo: 'new',
   		required: true
   	},
