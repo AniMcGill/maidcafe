@@ -58,6 +58,16 @@ module.exports.connections = {
   ***************************************************************************/
   mongodb: {
     adapter: 'sails-mongo',
+    url: process.env.MONGOLAB_URI
+    /*host: 'localhost',
+    port: 27017,
+    user: '',
+    password: '',
+    database: 'maidcafedb'*/
+  },
+
+  mongodbdev: {
+    adapter: 'sails-mongo',
     host: 'localhost',
     port: 27017,
     user: '',
