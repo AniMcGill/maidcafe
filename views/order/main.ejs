@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row">
     <form method="get" action="/order/create" class="form-inline">
-      <div class="col-xs-1">
+      <div class="col-xs-2">
         <label for="tableInput">Table</label>
         <select id="tableInput" name="table" class="form-control"required>
           <% for(var i = 1; i <= 30; i++){ %>
@@ -33,7 +33,12 @@
         <td><%= order.customer.table %></td>
         <td><%= order.customer.name %></td>
         <td><%= order.menuItem.name %></td>
-        <td><%= order.state %></td>
+        <td>
+          <%= order.state %>
+          <%if (order.state === 'ready'){ %>
+            <span class="glyphicon glyphicon-bell" style="color:red"></span>
+          <%}%>
+        </td>
         <td>
           <a href="/order/serve/<%= order.id%>"><span class="glyphicon glyphicon-glass"></span></a>
           <!--<a href="/order/modify/<%= order.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
