@@ -1,0 +1,25 @@
+<div class="col-xs-5">
+  <div class="panel panel-default">
+    <div class="panel-heading"><%= menuitem.name %></div>
+    <div class="panel-body" id="<%= menuitem.name.toLowerCase()%>Panel">
+      <table class="table table-hover table-condensed">
+        <col width="10%">
+        <col width="25%">
+        <col width="65%">
+        <tr>
+          <th><span class="glyphicon glyphicon-check"></span></th>
+          <th>Shortname</th>
+          <th>Name</th>
+        </tr>
+        <% menuitem.data.forEach(function(datum) { %>
+        <tr>
+          <td><input type="checkbox" name="orders" value="<%= datum.id %>"> </td>
+          <td><%= datum.shortname %></td>
+          <td><%= datum.name %></td>
+        </tr>
+        <% }) %>
+      </table>
+    </div>
+  </div>
+
+</div>

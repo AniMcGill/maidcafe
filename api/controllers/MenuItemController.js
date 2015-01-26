@@ -40,9 +40,9 @@ module.exports = {
   },
 
   /**
-   * `MenuItemController.view()`
+   * `MenuItemController.main()`
    */
-  menu: function (req, res) {
+  main: function (req, res) {
     async.auto({
       entrees: function(next){
         MenuItem.find({ category: 'entree' }).exec(next);
@@ -64,11 +64,26 @@ module.exports = {
         if(err) return res.serverError(err);
 
         return res.view({
-          entrees: async_data.entrees,
-          mains: async_data.mains,
-          sides: async_data.sides,
-          deserts: async_data.deserts,
-          drinks: async_data.drinks
+          menuitems: [{
+            name: 'Entree',
+            data: async_data.entrees
+          },
+          {
+            name: 'Main',
+            data: async_data.mains
+          },
+          {
+            name: 'Side',
+            data: async_data.sides
+          },
+          {
+            name: 'Desert',
+            data: async_data.deserts
+          },
+          {
+            name: 'Drink',
+            data: async_data.drinks
+          }]
         });
     });
 

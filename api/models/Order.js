@@ -8,7 +8,6 @@
 module.exports = {
 
   attributes: {
-  	notes: 'text',
   	state: {
   		type: 'string',
   		enum: ['new', 'preparing', 'ready', 'served'],
@@ -22,7 +21,7 @@ module.exports = {
   	customer: {
   		model: 'Customer'
   	},
-  	item: {
+  	menuItem: {
   		model: 'MenuItem'
   	}
   }

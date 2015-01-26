@@ -35,17 +35,25 @@ module.exports.routes = {
   '/': {
     view: 'homepage'
   },
+
+  /**
+   * Menu
+   */
   'get /menu': {
     controller: 'MenuItemController',
-    action: 'menu'
+    action: 'main'
   },
   'post /menu/create': {
     controller: 'MenuItemController',
     action: 'create'
   },
+
+  /**
+   * Customer
+   */
   'get /customers': {
     controller: 'CustomerController',
-    action: 'list'
+    action: 'main'
   },
   'post /customer/create': {
     controller: 'CustomerController',
@@ -54,6 +62,22 @@ module.exports.routes = {
   'post /customer/checkout': {
     controller: 'CustomerController',
     action: 'checkout'
+  },
+
+  /**
+   * Order
+   */
+  'get /orders': {
+    controller: 'OrderController',
+    action: 'main'
+  },
+  'get /order/create': {
+    controller: 'OrderController',
+    action: 'create'
+  },
+  'post /order/create': {
+    controller: 'OrderController',
+    action: 'create'
   }
 
   /***************************************************************************

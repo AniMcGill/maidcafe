@@ -1,0 +1,29 @@
+<div class="row">
+  <div class="panel panel-default">
+    <div class="panel-heading"><a data-toggle="collapse" href="#<%= menuitem.name.toLowerCase()%>Panel"><%= menuitem.name %></a></div>
+    <div class="panel-body collapse in" id="<%= menuitem.name.toLowerCase()%>Panel">
+      <table class="table table-hover table-condensed">
+        <col width="10%">
+        <col width="25%">
+        <col width="10%">
+        <tr>
+          <th>Shortname</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Operations</th>
+        </tr>
+        <% menuitem.data.forEach(function(datum) { %>
+        <tr>
+          <td><%= datum.shortname %></td>
+          <td><%= datum.name %></td>
+          <td>$<%= datum.price %></td>
+          <td>
+            <a href="/menuitem/modify/<%= datum.id %>"><span class="glyphicon glyphicon-pencil"></span></a>
+            <a href="/menuitem/destroy/<%= datum.id%>"><span class="glyphicon glyphicon-trash"></span></a>
+          </td>
+        </tr>
+        <% }) %>
+      </table>
+    </div>
+  </div>
+</div>

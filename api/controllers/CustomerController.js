@@ -38,9 +38,10 @@ module.exports = {
   },
 
   /**
-   * `CustomerController.list()`
+   * `CustomerController.main()`
+   * Show active (unpaid) customers and their current balances
    */
-  list: function (req, res) {
+  main: function (req, res) {
     Customer.find({where: {paidAt: null}, sort:'table'}).populate('orders', {customer: {parent: '_id'}}).exec(function(err, customers) {
       if(err) return res.serverError(err);
       return res.view({
@@ -48,6 +49,18 @@ module.exports = {
       });
     });
   },
+
+  /**
+   * `CustomerController.table()`
+   * Returns the list of active (unpaid) customers for the given table
+   */
+  /*table: function (req, res) {
+    Customer.find({table: req.param('id')}).exec(function(err, customers) {
+      if(err) return res.serverError(err);
+      console.log(customers);
+      return res.send(customers);
+    });
+  },*/
 
   /**
    * `CustomerController.checkout()`
