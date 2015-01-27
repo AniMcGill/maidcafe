@@ -41,23 +41,228 @@ module.exports = {
     else {
       if(req.body.orders instanceof Array){
         req.body.orders.forEach(function(menuitem){
-          Order.create({
-            customer: req.body.customer,
-            menuItem: menuitem
-          }).exec(function(next){});
+          MenuItem.findOne({id: menuitem}).exec(function(err, item){
+            if (err) return res.serverError(err);
+            Order.create({
+              table: req.body.table,
+              category: item.category,
+              customer: req.body.customer,
+              menuItem: menuitem
+            }).exec(function(next){});
+          });
+
         });
       }
       else {
-        Order.create({
-          customer: req.body.customer,
-          menuItem: req.body.orders
-        }).exec(function(next){});
+        MenuItem.findOne({id: req.body.orders}).exec(function(err, item){
+          if (err) return res.serverError(err);
+          Order.create({
+            table: req.body.table,
+            category: item.category,
+            customer: req.body.customer,
+            menuItem: req.body.orders
+          }).exec(function(next){});
+        });
+
       }
 
       res.redirect('/orders');
     }
   },
 
+
+  kitchen: function(req, res) {
+    // a part of me died...fuck...
+    async.auto({
+      drinks: function(next){
+        Order.native(function(err, collection){
+          collection.aggregate(
+            [
+              {
+                $match: {
+                  $and: [
+                    {category: 'drink'},
+                    {
+                      $or:
+                      [
+                        {state: {$ne: 'ready'}},
+                        {state: {$ne: 'served'}}
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$table',
+                  timestamp: { $min: '$createdAt'},
+                  orders: {$push: '$$ROOT'}
+                }
+              },
+              {
+                $sort: {
+                  timestamp: 1
+                }
+              }
+            ], function(err, items){
+              next(null, items)
+            }
+          );
+        });
+      },
+      entrees: function(next){
+        Order.native(function(err, collection){
+          collection.aggregate(
+            [
+              {
+                $match: {
+                  $and: [
+                    {category: 'entree'},
+                    {
+                      $or:
+                        [
+                          {state: {$ne: 'ready'}},
+                          {state: {$ne: 'served'}}
+                        ]
+                    }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$table',
+                  timestamp: { $min: '$createdAt'},
+                  orders: {$push: '$$ROOT'}
+                }
+              },
+              {
+                $sort: {
+                  timestamp: 1
+                }
+              }
+            ], function(err, items){
+              next(null, items)
+            }
+          );
+        });
+      },
+      mains: function(next){
+        Order.native(function(err, collection){
+          collection.aggregate(
+            [
+              {
+                $match: {
+                  $and: [
+                    {category: 'main'},
+                    {
+                      $or:
+                        [
+                          {state: {$ne: 'ready'}},
+                          {state: {$ne: 'served'}}
+                        ]
+                    }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$table',
+                  timestamp: { $min: '$createdAt'},
+                  orders: {$push: '$$ROOT'}
+                }
+              },
+              {
+                $sort: {
+                  timestamp: 1
+                }
+              }
+            ], function(err, items){
+              next(null, items)
+            }
+          );
+        });
+      },
+      sides: function(next){
+        Order.native(function(err, collection){
+          collection.aggregate(
+            [
+              {
+                $match: {
+                  $and: [
+                    {category: 'side'},
+                    {
+                      $or:
+                        [
+                          {state: {$ne: 'ready'}},
+                          {state: {$ne: 'served'}}
+                        ]
+                    }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$table',
+                  timestamp: { $min: '$createdAt'},
+                  orders: {$push: '$$ROOT'}
+                }
+              },
+              {
+                $sort: {
+                  timestamp: 1
+                }
+              }
+            ], function(err, items){
+              next(null, items)
+            }
+          );
+        });
+      },
+      deserts: function(next){
+        Order.native(function(err, collection){
+          collection.aggregate(
+            [
+              {
+                $match: {
+                  $and: [
+                    {category: 'desert'},
+                    {
+                      $or:
+                        [
+                          {state: {$ne: 'ready'}},
+                          {state: {$ne: 'served'}}
+                        ]
+                    }
+                  ]
+                }
+              },
+              {
+                $group: {
+                  _id: '$table',
+                  timestamp: { $min: '$createdAt'},
+                  orders: {$push: '$$ROOT'}
+                }
+              },
+              {
+                $sort: {
+                  timestamp: 1
+                }
+              }
+            ], function(err, items){
+              next(null, items)
+            }
+          );
+        });
+      }
+    },
+      function allDone(err, async_data){
+        return res.view('kitchen/main', {
+          categories: async_data
+        });
+      }
+    );
+
+  },
 
   /**
    * `OrderController.destroy()`

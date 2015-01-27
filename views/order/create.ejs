@@ -7,6 +7,7 @@
   <form method="post" action="/order/create" class="form-inline">
     <div class="row">
       <div class="col-xs-2">
+        <input type="hidden" name="table" value="<%= table %>">
         <label for="customerInput">Customer</label>
         <select id="customerInput" name="customer" class="form-control" required>
           <% customers.forEach(function(customer){ %>

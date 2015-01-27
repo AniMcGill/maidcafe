@@ -8,6 +8,15 @@
 module.exports = {
 
   attributes: {
+    table: {
+      type: 'integer',
+      required: true
+    },
+    category: {
+      type: 'string',
+      enum: ['entree', 'main', 'side', 'desert', 'drink'],
+      required: true
+    },
   	state: {
   		type: 'string',
   		enum: ['new', 'preparing', 'ready', 'served'],

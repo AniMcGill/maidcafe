@@ -78,6 +78,14 @@ module.exports.routes = {
   'post /order/create': {
     controller: 'OrderController',
     action: 'create'
+  },
+
+  /**
+   * Kitchen
+   */
+  'get /kitchen': {
+    controller: 'OrderController',
+    action: 'kitchen'
   }
 
   /***************************************************************************
