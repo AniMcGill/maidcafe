@@ -70,10 +70,78 @@ module.exports = {
     }
   },
 
-
+  /**
+   * A fucking ghetto way of grouping but I'm too frustrated trying to do it with mongo
+   * @param req
+   * @param res
+   */
   kitchen: function(req, res) {
+
+    // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
+    function groupBy( array , f )
+    {
+      var groups = {};
+      array.forEach( function( o )
+      {
+        var group = JSON.stringify( f(o) );
+        groups[group] = groups[group] || [];
+        groups[group].push( o );
+      });
+      return Object.keys(groups).map( function( group )
+      {
+        return groups[group];
+      })
+    }
+
+    Order.find({or: [{state: 'new'}, {state: 'preparing'}], sort: 'createdAt ASC' }).populate('customer').populate('menuItem').exec(function(err, orders){
+      var groupedOrders = groupBy(orders, function(item){
+        return [item.category, item.table];
+      });
+
+      var drinks = new Array();
+      var entrees = new Array();
+      var mains = new Array();
+      var sides = new Array();
+      var deserts = new Array();
+
+      groupedOrders.forEach((function(group){
+        group.forEach(function(subgroup){
+          switch(subgroup.category){
+            case 'drink':
+              drinks.push(subgroup);
+              break;
+            case 'entree':
+              entrees.push(subgroup);
+              break;
+            case 'main':
+              mains.push(subgroup);
+              break;
+            case 'side':
+              sides.push(subgroup);
+              break;
+            case 'desert':
+              deserts.push(subgroup);
+              break;
+          }
+        });
+
+      }));
+
+      return res.view('kitchen/main', {
+        categories: [
+          {name: 'drinks', data: drinks},
+          {name: 'entrees', data: entrees},
+          {name: 'mains', data: mains},
+          {name: 'sides', data: sides},
+          {name: 'deserts', data: deserts}
+        ]
+      });
+
+    });
+
+
     // a part of me died...fuck...
-    async.auto({
+    /*async.auto({
       drinks: function(next){
         Order.native(function(err, collection){
           collection.aggregate(
@@ -260,7 +328,7 @@ module.exports = {
           categories: async_data
         });
       }
-    );
+    );*/
 
   },
 

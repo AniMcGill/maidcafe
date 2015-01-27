@@ -1,35 +1,8 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-xs-3">
-      <div class="panel panel-default">
-        <div class="panel-heading"><a data-toggle="collapse" href="#drinksPanel">DRINKS</a></div>
-        <div class="panel-body collapse in" id="drinksPanel">
-          <table class="table table-hover table-condensed">
-            <col width="5%">
-            <col width="30%">
-            <col width="15%">
-            <col width="25%">
-            <col width="25%">
-            <tr>
-              <th>Table</th>
-              <th>Menu Item</th>
-              <th>State</th>
-              <th>Timestamp</th>
-              <th>Operations</th>
-            </tr>
-            <% categories.drinks.forEach(function(table) { %>
-              <% table.orders.forEach(function(order) { %>
-                <tr>
-                  <td><%= order.table%></td>
-                  <td><%= order.menuItem.name%></td>
-                </tr>
-              <% }) %>
+    <% categories.forEach(function(category){ %>
+      <% include category.ejs %>
+    <%})%>
 
-            <% }) %>
-          </table>
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
