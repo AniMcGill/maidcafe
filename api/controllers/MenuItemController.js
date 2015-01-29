@@ -60,7 +60,24 @@ module.exports = {
         }
       );
     });
-
+  },
+  categories: function (req, res) {
+    MenuItem.native(function(err, collection){
+      if (err) return res.serverError(err);
+      collection.aggregate(
+        [{
+          $group: {
+            _id: "$category",
+            items: { $push: "$$ROOT"}
+          }
+        }],
+        function(err, menuitems){
+          if (err) return res.serverError(err);
+          MenuItem.subscribe(menuitems);
+          return res.json(menuitems);
+        }
+      );
+    });
   }
 };
 
