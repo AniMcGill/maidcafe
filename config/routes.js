@@ -39,19 +39,19 @@ module.exports.routes = {
   /**
    * Menu
    */
-  'get /menu': {
+  /*'get /menu': {
     controller: 'MenuItemController',
     action: 'main'
   },
   'post /menu/create': {
     controller: 'MenuItemController',
     action: 'create'
-  },
+  },*/
 
   /**
    * Customer
    */
-  'get /customers': {
+  /*'get /customers': {
     controller: 'CustomerController',
     action: 'main'
   },
@@ -62,12 +62,12 @@ module.exports.routes = {
   'post /customer/checkout': {
     controller: 'CustomerController',
     action: 'checkout'
-  },
+  },*/
 
   /**
    * Order
    */
-  'get /orders': {
+  /*'get /orders': {
     controller: 'OrderController',
     action: 'main'
   },
@@ -78,15 +78,15 @@ module.exports.routes = {
   'post /order/create': {
     controller: 'OrderController',
     action: 'create'
-  },
+  },*/
 
   /**
    * Kitchen
    */
-  'get /kitchen': {
+  /*'get /kitchen': {
     controller: 'OrderController',
     action: 'kitchen'
-  }
+  }*/
 
   /***************************************************************************
   *                                                                          *

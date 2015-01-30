@@ -10,11 +10,11 @@ module.exports = {
   /**
    * `MenuItemController.create()`
    */
-  create: function (req, res) {
+  /*create: function (req, res) {
     MenuItem.create(req.body).exec(function(err, item) {
-      res.redirect('/menu');
+      res.redirect('#/menu');
     });
-  },
+  },*/
 
 
   /**
@@ -61,6 +61,7 @@ module.exports = {
       );
     });
   },
+
   categories: function (req, res) {
     MenuItem.native(function(err, collection){
       if (err) return res.serverError(err);
@@ -73,7 +74,11 @@ module.exports = {
         }],
         function(err, menuitems){
           if (err) return res.serverError(err);
-          MenuItem.subscribe(menuitems);
+          if(req.isSocket){
+            //MenuItem.subscribe(req.socket, menuitems);
+            MenuItem.watch(req.socket);
+          }
+         /* MenuItem.subscribe(menuitems);*/
           return res.json(menuitems);
         }
       );

@@ -1,0 +1,64 @@
+<div class="container-fluid">
+  <div class="row">
+    <p>
+      <button class="btn btn-default" type="button" ng-click="isAddMenuCollapsed = !isAddMenuCollapsed">
+        <span class="glyphicon glyphicon-plus"></span>
+      </button>
+    </p>
+
+    <div id="menuAdd" collapse="isAddMenuCollapsed">
+      <div class="well">
+        <form method="post" action="/menuitem/create" class="form-inline">
+          <label for="menuName">Name</label>
+          <input type="text" class="form-control" id="menuName" name="name" required>
+
+          <label for="menuShortName">Shortname</label>
+          <input type="text" class="form-control" id="menuShortName" name="shortname" placeholder="ex: M01" required>
+
+          <label for="menuCategory">Category</label>
+          <select id="menuCategory" name="category" class="form-control" required>
+            <option value="entree">Entrée</option>
+            <option value="main">Main</option>
+            <option value="side">Side</option>
+            <option value="desert">Desert</option>
+            <option value="drink">Drink</option>
+          </select>
+
+          <label for="menuPrice">Price</label>
+          <input type="number" class="form-control" min="0" step="any" id="menuPrice" name="price" required>
+
+          <button type="submit" class="btn btn-default">Add</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="panel panel-default col-xs-3" ng-repeat="category in categories" ng-show="category.items.length">
+      <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
+      <div class="panel-body" id="{{category._id}}Panel" collapse="isCollapsed">
+        <table class="table table-hover table-condensed">
+          <col width="10%">
+          <col width="25%">
+          <col width="10%">
+          <tr>
+            <th>Shortname</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Operations</th>
+          </tr>
+          <tr ng-repeat="datum in category.items">
+            <td>{{datum.shortname}}</td>
+            <td>{{datum.name}}</td>
+            <td>${{datum.price}}</td>
+            <td>
+              <a href="/menuitem/modify/{{datum.id}}"><span class="glyphicon glyphicon-pencil"></span></a>
+              <a href="/menuitem/destroy/{{datum.id}}"><span class="glyphicon glyphicon-trash"></span></a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
