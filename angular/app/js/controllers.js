@@ -13,14 +13,7 @@ maidcafeAppControllers.controller('MenuCtrl',
       ///////////
 
       // collapse the add menu by default
-      $scope.isAddMenuCollapsed = true;
-      /*$scope.categories = [
-        {id: 'drinks', items: []},
-        {id: 'entrees', items: []},
-        {id: 'mains', items: []},
-        {id: 'sides', items: []},
-        {id: 'deserts', items: []}
-      ];*/
+      clearForm();
       $scope.categories = {
         drinks: {_id: 'drinks', items: []},
         entrees: {_id: 'entrees', items: []},
@@ -29,43 +22,56 @@ maidcafeAppControllers.controller('MenuCtrl',
         deserts: {_id: 'deserts', items: []}
       };
 
+      $scope.create = function(item){
+        io.socket.post('/menuitem/create', item, function(data) {
+          if(data){
+            clearForm();
+          }
+        });
+      };
+
+      function clearForm(){
+        $scope.item = {};
+        $scope.isAddMenuCollapsed = true;
+      }
+
+      // ugly triaging
+      function addToBucket(datum){
+        switch (datum.category){
+          case 'drink':
+            $scope.categories.drinks.items.push(datum);
+            break;
+          case 'entree':
+            $scope.categories.entrees.items.push(datum);
+            break;
+          case 'main':
+            $scope.categories.mains.items.push(datum);
+            break;
+          case 'side':
+            $scope.categories.sides.items.push(datum);
+            break;
+          case 'desert':
+            $scope.categories.deserts.items.push(datum);
+            break;
+        }
+      }
+
       (function() {
-        /*$sails.get('/menuitem/categories').success(function (response) {
-          $scope.categories = response;
-        }).error(function (response) { console.log('error');});*/
-
-        /*$sails.get('/menuitem/subscribe').success(function (response) {
-          console.log(response);
-          console.log('subscribed to menuitems');
-        });*/
-
-        $sails.get("/menuitem").success(function (response) {
-          //$scope.categories = response;
-          // ugly triage
+        io.socket.get("/menuitem").success(function (response) {
           response.forEach(function(datum){
-            switch (datum.category){
-              case 'drink':
-                    $scope.categories.drinks.items.push(datum);
-                    break;
-              case 'entree':
-                    $scope.categories.entrees.items.push(datum);
-                    break;
-              case 'main':
-                $scope.categories.mains.items.push(datum);
-                break;
-              case 'side':
-                $scope.categories.sides.items.push(datum);
-                break;
-              case 'desert':
-                $scope.categories.deserts.items.push(datum);
-                break;
-            }
+            addToBucket(datum);
           });
 
         }).error(function (response) { console.log('error');});
 
-        $sails.on('menuitem', function(message){
-          console.log('sails published a message for item: '+message.verb);
+        io.socket.on('menuitem', function(message){
+          switch (message.verb){
+            case 'created':
+              addToBucket(message.data);
+              $scope.$apply();
+              break;
+            default: return;
+          }
         });
 
         /*$sails.on('item', function ( message ) {

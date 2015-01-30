@@ -8,15 +8,15 @@
 
     <div id="menuAdd" collapse="isAddMenuCollapsed">
       <div class="well">
-        <form method="post" action="/menuitem/create" class="form-inline">
+        <form class="form-inline">
           <label for="menuName">Name</label>
-          <input type="text" class="form-control" id="menuName" name="name" required>
+          <input type="text" class="form-control" id="menuName" ng-model="item.name" required>
 
           <label for="menuShortName">Shortname</label>
-          <input type="text" class="form-control" id="menuShortName" name="shortname" placeholder="ex: M01" required>
+          <input type="text" class="form-control" id="menuShortName" ng-model="item.shortname" placeholder="ex: M01" required>
 
           <label for="menuCategory">Category</label>
-          <select id="menuCategory" name="category" class="form-control" required>
+          <select id="menuCategory" ng-model="item.category" class="form-control" required>
             <option value="entree">Entrée</option>
             <option value="main">Main</option>
             <option value="side">Side</option>
@@ -25,9 +25,10 @@
           </select>
 
           <label for="menuPrice">Price</label>
-          <input type="number" class="form-control" min="0" step="any" id="menuPrice" name="price" required>
+          <input type="number" class="form-control" min="0" step="any" id="menuPrice" ng-model="item.price" required>
 
-          <button type="submit" class="btn btn-default">Add</button>
+          <input type="button" value="Add" ng-click="create(item)">
+          <!--<button type="submit" class="btn btn-default">Add</button>-->
         </form>
       </div>
     </div>
