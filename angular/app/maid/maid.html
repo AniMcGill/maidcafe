@@ -38,8 +38,6 @@
               <option ng-repeat="customer in customers | filter:newOrder.table" ng-show="customer.table == newOrder.table" value="{{customer.id}}">{{customer.name}}</option>
             </select>
           </div>
-
-          <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
         </div>
 
         <!--Also show the menu-->
@@ -57,7 +55,7 @@
                     <th>Shortname</th>
                     <th>Name</th>
                   </tr>
-                  <tr ng-repeat="datum in category.items">
+                  <tr ng-repeat="datum in category.items | orderBy:'shortname'">
                     <td><input type="checkbox" ng-model="newOrder.orders" value="{{datum._id}}"></td>
                     <td>{{datum.shortname}}</td>
                     <td>{{datum.name}}</td>
@@ -66,6 +64,13 @@
               </div>
             </div>
 
+          </div>
+        </div>
+
+        <!--Place the order-->
+        <div class="row">
+          <div class="col-xs-2">
+            <button type="submit" class="btn btn-default">Place order</button>
           </div>
         </div>
       </form>

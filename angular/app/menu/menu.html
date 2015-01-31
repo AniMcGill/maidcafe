@@ -1,12 +1,14 @@
 <div class="container-fluid">
   <div class="row">
-    <p>
+    <div class="col-xs-2">
       <button class="btn btn-default" type="button" ng-click="isAddMenuCollapsed = !isAddMenuCollapsed">
         <span class="glyphicon glyphicon-plus"></span>
       </button>
-    </p>
+    </div>
+  </div>
 
-    <div id="menuAdd" collapse="isAddMenuCollapsed">
+
+  <div id="menuAdd" collapse="isAddMenuCollapsed">
       <div class="well">
         <form class="form-inline">
           <label for="menuName">Name</label>
@@ -32,7 +34,8 @@
         </form>
       </div>
     </div>
-  </div>
+
+  <hr>
 
   <div class="row">
     <div class="panel panel-default col-xs-3" ng-repeat="category in categories" ng-show="category.items.length">
@@ -48,7 +51,7 @@
             <th>Price</th>
             <th>Operations</th>
           </tr>
-          <tr ng-repeat="datum in category.items">
+          <tr ng-repeat="datum in category.items | orderBy:'shortname'">
             <td>{{datum.shortname}}</td>
             <td>{{datum.name}}</td>
             <td>${{datum.price}}</td>
