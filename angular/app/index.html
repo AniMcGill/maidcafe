@@ -36,15 +36,15 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">Maid Cafe</a>
+        <a class="navbar-brand" href="#/main">Maid Cafe</a>
       </div>
 
-      <div id="mainMenu" collapse="isNavCollapsed">
+      <div id="mainMenu" collapse="isNavCollapsed" ng-controller="NavBarCtrl">
         <ul class="nav navbar-nav">
-          <li><a href="#/main">Main</a></li>
-          <li><a href="#/menu">Menu</a> </li>
-          <li><a href="#/maid">Maid</a></li>
-          <li><a href="#/kitchen">Kitchen</a> </li>
+          <!--<li ng-class="{active: isActive('/')}"><a href="#/main">Main</a></li>-->
+          <li ng-class="{active: isActive('/menu')}"><a href="#/menu">Menu</a> </li>
+          <li ng-class="{active: isActive('/maid')}"><a href="#/maid">Maid</a></li>
+          <li ng-class="{active: isActive('/kitchen')}"><a href="#/kitchen">Kitchen</a> </li>
         </ul>
 
       </div>
@@ -57,13 +57,7 @@
 
   <div ng-view></div>
 
-  <footer>
-    <div>Angular seed app: v<span app-version></span></div>
-  </footer>
 
-  <!-- In production use:
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-  -->
   <!--<script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>-->
 
@@ -81,8 +75,7 @@
   <!------------------------->
   <script src="js/app.js"></script>
   <script src="js/controllers.js"></script>
-  <!--<script src="main/main.js"></script>
-  <script src="menu/menu.js"></script>-->
+
   <script src="components/version/version.js"></script>
   <script src="components/version/version-directive.js"></script>
   <script src="components/version/interpolate-filter.js"></script>

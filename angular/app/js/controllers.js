@@ -4,13 +4,19 @@
 
 var maidcafeAppControllers = angular.module('maidcafeApp.controllers', []);
 
-maidcafeAppControllers.controller('MainCtrl', [function() {
+maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', function($scope, $location) {
+  $scope.isActive = function (location){
+    return location === $location.path();
+  };
 }]);
+
+maidcafeAppControllers.controller('MainCtrl', '$scope', function($scope){
+
+});
 
 maidcafeAppControllers.controller('MenuCtrl',
   ['$scope','$sails','$filter',
     function($scope,$sails,$filter) {
-      ///////////
 
       // collapse the add menu by default
       clearForm();
@@ -28,6 +34,10 @@ maidcafeAppControllers.controller('MenuCtrl',
             clearForm();
           }
         });
+      };
+
+      $scope.destroy = function(item){
+        io.socket.get('/menuitem/destroy/' + item);
       };
 
       function clearForm(){
@@ -56,6 +66,26 @@ maidcafeAppControllers.controller('MenuCtrl',
         }
       }
 
+      function removeFromBucket(datum){
+        switch (datum.category){
+          case 'drink':
+            $scope.categories.drinks.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+            break;
+          case 'entree':
+            $scope.categories.entrees.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+            break;
+          case 'main':
+            $scope.categories.mains.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+            break;
+          case 'side':
+            $scope.categories.sides.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+            break;
+          case 'desert':
+            $scope.categories.deserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+            break;
+        }
+      }
+
       (function() {
         io.socket.get("/menuitem").success(function (response) {
           response.forEach(function(datum){
@@ -68,6 +98,10 @@ maidcafeAppControllers.controller('MenuCtrl',
           switch (message.verb){
             case 'created':
               addToBucket(message.data);
+              $scope.$apply();
+              break;
+            case 'destroyed':
+              removeFromBucket(message.previous);
               $scope.$apply();
               break;
             default: return;
@@ -117,7 +151,6 @@ maidcafeAppControllers.controller('MenuCtrl',
         });*/
 
       })();
-      ///////////
 
 }]);
 

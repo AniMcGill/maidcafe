@@ -20,11 +20,12 @@ module.exports = {
   /**
    * `MenuItemController.destroy()`
    */
-  destroy: function (req, res) {
+  /*destroy: function (req, res) {
     MenuItem.destroy({id: req.param('id')}).exec(function() {
-      res.redirect('/menu');
+      *//*res.redirect('/menu');*//*
+      res.end();
     });
-  },
+  },*/
 
 
   /**

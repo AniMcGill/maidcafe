@@ -54,7 +54,7 @@
             <td>${{datum.price}}</td>
             <td>
               <a href="/menuitem/modify/{{datum.id}}"><span class="glyphicon glyphicon-pencil"></span></a>
-              <a href="/menuitem/destroy/{{datum.id}}"><span class="glyphicon glyphicon-trash"></span></a>
+              <button class="btn btn-xs" ng-click="destroy(datum.id)"><span class="glyphicon glyphicon-trash" ></span></button>
             </td>
           </tr>
         </table>
