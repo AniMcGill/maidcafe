@@ -12,41 +12,43 @@ module.exports = {
   /**
    * `CustomerController.create()`
    */
-  create: function (req, res) {
+/*  create: function (req, res) {
     Customer.create(req.body).exec(function(err,item){
       res.redirect('/customers');
     });
-  },
+  },*/
 
 
   /**
    * `CustomerController.modify()`
    */
-  modify: function (req, res) {
+/*  modify: function (req, res) {
     return res.json({
       todo: 'modify() is not implemented yet!'
     });
-  },
+  },*/
 
   /**
    * `CustomerController.destroy()`
    */
-  destroy: function (req, res) {
+/*  destroy: function (req, res) {
     Customer.destroy({id: req.param('id')}).exec(function(){
       res.redirect('/customers');
     });
-  },
+  },*/
 
   /**
    * `CustomerController.main()`
    * Show active (unpaid) customers and their current balances
    */
-  main: function (req, res) {
+  find: function (req, res) {
     Customer.find({where: {paidAt: null}, sort:'table'}).populate('orders', {customer: {parent: '_id'}}).exec(function(err, customers) {
       if(err) return res.serverError(err);
-      return res.view({
+      Customer.subscribe(req.socket, customers);
+      return res.json(customers);
+      /*return res.view({
         customers: customers
-      });
+      });*/
     });
   },
 

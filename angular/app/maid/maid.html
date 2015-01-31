@@ -1,0 +1,108 @@
+<div class="container-fluid">
+  <div class="row">
+    <form class="form-inline">
+      <div class="col-xs-2">
+        <label for="tableSelection">Table</label>
+        <select id="tableSelection" ng-model="newOrder.table" class="form-control" required>
+          <option ng-repeat="table in tables" value="{{table}}">{{table}}</option>
+        </select>
+      </div>
+
+      <!--Add a customer while we're at it-->
+      <div class="col-xs-4 col-xs-offset-1">
+        <label for="customerNameInput">Add customer: </label>
+        <input id="customerNameInput" type="text" class="form-control" ng-model="newCustomer.name" required>
+
+        <button type="submit" class="btn btn-default" ng-click="createCustomer(newCustomer)"><span class="glyphicon glyphicon-plus"></span> </button>
+      </div>
+    </form>
+  </div>
+  <hr ng-show="newOrder.table > 0">
+
+  <div class="row" ng-show="newOrder.table > 0">
+    <div class="col-xs-2">
+      <button class="btn btn-default" type="button" ng-click="isAddOrderCollapsed = !isAddOrderCollapsed">
+        New order
+      </button>
+    </div>
+  </div>
+
+  <!--Add an order-->
+  <div collapse="isAddOrderCollapsed">
+    <div class="well">
+      <form class="form-inline">
+        <div class="row">
+          <div class="col-xs-3">
+            <label for="customerSelection">Customer</label>
+            <select id="customerSelection" ng-model="newOrder.customer" class="form-control"required>
+              <option ng-repeat="customer in customers | filter:newOrder.table" ng-show="customer.table == newOrder.table" value="{{customer.id}}">{{customer.name}}</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
+
+        <!--Also show the menu-->
+        <div class="row">
+          <div class="col-xs-3" ng-repeat="category in categories" ng-show="category.items.length">
+            <div class="panel panel-default">
+              <div class="panel-heading">{{category._id.toUpperCase()}}</div>
+              <div class="panel-body" id="{{category._id.toLowerCase()}}Panel">
+                <table class="table table-hover table-condensed">
+                  <col width="10%">
+                  <col width="25%">
+                  <col width="65%">
+                  <tr>
+                    <th><span class="glyphicon glyphicon-check"></span></th>
+                    <th>Shortname</th>
+                    <th>Name</th>
+                  </tr>
+                  <tr ng-repeat="datum in category.items">
+                    <td><input type="checkbox" ng-model="newOrder.orders" value="{{datum._id}}"></td>
+                    <td>{{datum.shortname}}</td>
+                    <td>{{datum.name}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <table class="table table-hover table-condensed">
+      <col width="10%">
+      <col width="25%">
+      <col width="20%">
+      <col width="10%">
+      <col width="10%">
+      <tr>
+        <th>Table</th>
+        <th>Name</th>
+        <th>Menu Item</th>
+        <th>Status</th>
+        <th>Operations</th>
+      </tr>
+      <tr ng-repeat="order in orders | filter:newOrder.table">
+        <td>{{order.customer.table}}</td>
+        <td>{{order.customer.name}}</td>
+        <td>{{order.menuItem.name}}</td>
+        <td>
+          {{order.state}}
+          <span class="glyphicon glyphicon-bell" style="color:red"></span>
+        </td>
+        <td>
+          <a><span class="glyphicon glyphicon-glass"></span></a>
+          <!--<a href="/order/modify/"><span class="glyphicon glyphicon-pencil"></span></a>
+          <a href="/order/destroy/"><span class="glyphicon glyphicon-trash"></span></a>-->
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</div>

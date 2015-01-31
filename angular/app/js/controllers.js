@@ -121,4 +121,112 @@ maidcafeAppControllers.controller('MenuCtrl',
 
 }]);
 
+maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
+  function($scope,$sails,$filter) {
+    $scope.customers = {};
+    $scope.orders = {};
 
+    clearCustomerForm();
+    clearOrderForm();
+
+    $scope.categories = {
+      drinks: {_id: 'drinks', items: []},
+      entrees: {_id: 'entrees', items: []},
+      mains: {_id: 'mains', items: []},
+      sides: {_id: 'sides', items: []},
+      deserts: {_id: 'deserts', items: []}
+    };
+
+    $scope.createCustomer = function(item){
+      var newCustomerData = {
+        table: $scope.newOrder.table,
+        name: item.name
+      };
+      io.socket.post('/customer/create', newCustomerData, function(data){
+        if(data){
+          clearCustomerForm();
+        }
+      });
+    };
+
+    function clearCustomerForm(){
+      if($scope.newCustomer){
+        $scope.newCustomer.name = "";
+      }
+      else {
+        $scope.newCustomer = {};
+      }
+    }
+
+    function clearOrderForm(){
+      $scope.isAddOrderCollapsed = true;
+    }
+
+    // ugly triaging
+    function addToBucket(datum){
+      switch (datum.category){
+        case 'drink':
+          $scope.categories.drinks.items.push(datum);
+          break;
+        case 'entree':
+          $scope.categories.entrees.items.push(datum);
+          break;
+        case 'main':
+          $scope.categories.mains.items.push(datum);
+          break;
+        case 'side':
+          $scope.categories.sides.items.push(datum);
+          break;
+        case 'desert':
+          $scope.categories.deserts.items.push(datum);
+          break;
+      }
+    }
+
+    (function() {
+      io.socket.get('/customer').success(function (response) {
+        $scope.customers = response;
+      }).error(function (response) { console.log('error');});
+
+      io.socket.get('/order').success(function(response) {
+        $scope.orders = response;
+      }).error(function (response) {console.log('error');});
+
+      io.socket.get('/menuitem').success(function (response) {
+        response.forEach(function (datum){
+          addToBucket(datum);
+        });
+      }).error(function (response) {console.log('error');});
+
+      io.socket.on('customer', function(message){
+        switch (message.verb){
+          case 'created':
+            $scope.customers.push(message.data);
+            $scope.$apply();
+            break;
+          default: return;
+        }
+      });
+
+      io.socket.on('order', function(message){
+        switch (message.verb){
+          case 'created':
+            console.log(message);
+            break;
+          default: return;
+        }
+      });
+
+      io.socket.on('menuitem', function(message){
+        switch (message.verb){
+          case 'created':
+            addToBucket(message.data);
+            $scope.$apply();
+            break;
+          default: return;
+        }
+      });
+
+    })();
+
+  }]);
