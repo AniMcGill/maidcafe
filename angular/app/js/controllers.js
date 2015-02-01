@@ -36,9 +36,9 @@ maidcafeAppControllers.controller('MenuCtrl',
         });
       };
 
-      $scope.destroy = function(item){
+      /*$scope.destroy = function(item){
         io.socket.get('/menuitem/destroy/' + item);
-      };
+      };*/
 
       function clearForm(){
         $scope.item = {};
@@ -100,68 +100,24 @@ maidcafeAppControllers.controller('MenuCtrl',
               addToBucket(message.data);
               $scope.$apply();
               break;
-            case 'destroyed':
+            /*case 'destroyed':
               removeFromBucket(message.previous);
               $scope.$apply();
-              break;
+              break;*/
             default: return;
           }
         });
-
-        /*$sails.on('item', function ( message ) {
-          console.log('sails published a message for item: '+message.verb);
-          switch (message.verb)
-          {
-            case 'created':
-              console.log("pushing "+JSON.stringify(message.data));
-              $scope.items.push(message.data);
-              $scope.lookup = {};
-              for (var i in $scope.items)
-              {
-                $scope.lookup[$scope.items[i].id] = i;
-              }
-              break;
-            case 'destroyed':
-              $scope.items = $scope.items.filter(function(item) {
-                return item.id != message.id;
-              });
-              $scope.lookup = {};
-              for (var i in $scope.items)
-              {
-                $scope.lookup[$scope.items[i].id] = i;
-              }
-              break;
-            case 'addedTo':
-              var idx = $scope.lookup[message.id];
-              $sails.get("/task/"+message.addedId).success(function (aTask) {
-                $scope.items[idx].tasks.push(aTask);
-              }).error(function (aTask) { console.log('error');});
-              break;
-            case 'removedFrom':
-              var idx = $scope.lookup[message.id];
-              $scope.items[idx].tasks = $scope.items[idx].tasks.filter(function(task) {
-                return task.id != message.removedId;
-              });
-              break;
-          }
-        });*/
-
-        /*$sails.on('task', function ( message ) {
-          console.log('sails published a message for task: '+message.verb);
-        });*/
-
       })();
-
 }]);
 
 maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
   function($scope,$sails,$filter) {
-    $scope.customers = {};
-    $scope.orders = {};
-
     clearCustomerForm();
     clearOrderForm();
 
+    // models
+    $scope.customers = {};
+    $scope.orders = {};
     $scope.categories = {
       drinks: {_id: 'drinks', items: []},
       entrees: {_id: 'entrees', items: []},
@@ -182,6 +138,25 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
       });
     };
 
+    $scope.createOrder = function(data){
+      data.orders.forEach(function(order){
+        var orderObject = {
+          table: data.table,
+          category: order.category,
+          customer: data.customer,
+          menuItem: order
+        };
+        io.socket.post('/order/create', orderObject);
+      });
+
+      // guess everything went well
+      clearOrderForm();
+    };
+
+    $scope.serveOrder = function(order) {
+      //TODO
+    };
+
     function clearCustomerForm(){
       if($scope.newCustomer){
         $scope.newCustomer.name = "";
@@ -193,6 +168,10 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
 
     function clearOrderForm(){
       $scope.isAddOrderCollapsed = true;
+      if($scope.newOrder){
+        $scope.newOrder.customer = {};
+        $scope.newOrder.orders = [];
+      }
     }
 
     // ugly triaging
@@ -219,17 +198,17 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
     (function() {
       io.socket.get('/customer').success(function (response) {
         $scope.customers = response;
-      }).error(function (response) { console.log('error');});
+      }).error(function (response) { console.log('error getting customers');});
 
       io.socket.get('/order').success(function(response) {
         $scope.orders = response;
-      }).error(function (response) {console.log('error');});
+      }).error(function (response) {console.log('error getting orders');});
 
       io.socket.get('/menuitem').success(function (response) {
         response.forEach(function (datum){
           addToBucket(datum);
         });
-      }).error(function (response) {console.log('error');});
+      }).error(function (response) {console.log('error getting menu');});
 
       io.socket.on('customer', function(message){
         switch (message.verb){
@@ -244,7 +223,15 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
       io.socket.on('order', function(message){
         switch (message.verb){
           case 'created':
-            console.log(message);
+            // annoying, have to populate objects ourselves
+            io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
+              message.data.menuItem = menuitem;
+            });
+            io.socket.get('/customer/' + message.data.customer, function (customer){
+              message.data.customer = customer;
+            });
+            $scope.orders.push(message.data);
+            $scope.$apply();
             break;
           default: return;
         }

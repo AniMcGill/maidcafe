@@ -56,7 +56,7 @@
                     <th>Name</th>
                   </tr>
                   <tr ng-repeat="datum in category.items | orderBy:'shortname'">
-                    <td><input type="checkbox" ng-model="newOrder.orders" value="{{datum._id}}"></td>
+                    <td><input type="checkbox" checklist-model="newOrder.orders" checklist-value="datum"></td>
                     <td>{{datum.shortname}}</td>
                     <td>{{datum.name}}</td>
                   </tr>
@@ -70,7 +70,7 @@
         <!--Place the order-->
         <div class="row">
           <div class="col-xs-2">
-            <button type="submit" class="btn btn-default">Place order</button>
+            <button type="submit" class="btn btn-default" ng-click="createOrder(newOrder)">Place order</button>
           </div>
         </div>
       </form>
@@ -81,9 +81,9 @@
 
   <div class="row">
     <table class="table table-hover table-condensed">
-      <col width="10%">
-      <col width="25%">
-      <col width="20%">
+      <col width="5%">
+      <col width="40%">
+      <col width="35%">
       <col width="10%">
       <col width="10%">
       <tr>
@@ -104,7 +104,7 @@
           <span class="glyphicon glyphicon-bell" ng-switch-default style="color:red"></span>
         </td>
         <td>
-          <a><span class="glyphicon glyphicon-glass"></span></a>
+          <button class="btn btn-xs button-success" ng-show="order.state == 'ready'" ng-click="serveOrder(order)">Serve order</button>
           <!--<a href="/order/modify/"><span class="glyphicon glyphicon-pencil"></span></a>
           <a href="/order/destroy/"><span class="glyphicon glyphicon-trash"></span></a>-->
         </td>

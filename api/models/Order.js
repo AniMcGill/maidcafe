@@ -28,10 +28,12 @@ module.exports = {
       defaultsTo: false
     },
   	customer: {
-  		model: 'Customer'
+  		model: 'Customer',
+      required: true
   	},
   	menuItem: {
-  		model: 'MenuItem'
+  		model: 'MenuItem',
+      required: true
   	}
   }
 };

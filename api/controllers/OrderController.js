@@ -8,66 +8,10 @@
 module.exports = {
 
 
-
-  /**
-   * `OrderController.create()`
-   */
-  create: function (req, res) {
-    if(req.method == 'GET') {
-      MenuItem.native(function(err, collection){
-        if (err) return res.serverError(err);
-        collection.aggregate(
-          [{
-            $group: {
-              _id: "$category",
-              items: { $push: "$$ROOT"}
-            }
-          }],
-          function(err, menuitems){
-            if (err) return res.serverError(err);
-            Customer.find({ table: req.param('table') }).exec(function(err, customers){
-              if (err) return res.serverError(err);
-
-              return res.view({
-                table: req.param('table'),
-                customers: customers,
-                menuitems: menuitems
-              });
-            });
-          }
-        );
-      });
-    }
-    else {
-      if(req.body.orders instanceof Array){
-        req.body.orders.forEach(function(menuitem){
-          MenuItem.findOne({id: menuitem}).exec(function(err, item){
-            if (err) return res.serverError(err);
-            Order.create({
-              table: req.body.table,
-              category: item.category,
-              customer: req.body.customer,
-              menuItem: menuitem
-            }).exec(function(next){});
-          });
-
-        });
-      }
-      else {
-        MenuItem.findOne({id: req.body.orders}).exec(function(err, item){
-          if (err) return res.serverError(err);
-          Order.create({
-            table: req.body.table,
-            category: item.category,
-            customer: req.body.customer,
-            menuItem: req.body.orders
-          }).exec(function(next){});
-        });
-
-      }
-
-      res.redirect('/orders');
-    }
+  pendingOrders: function(req, res){
+    Order.find({state: {'!': 'served'}, sort: 'createdAt ASC'}).populate('customer').populate('menuItem').exec(function(err, orders){
+      res.json(orders);
+    });
   },
 
   /**

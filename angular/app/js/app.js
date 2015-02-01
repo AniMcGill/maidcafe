@@ -5,6 +5,7 @@ angular.module('maidcafeApp', [
   'ngRoute',
   'ngSails',
   'ui.bootstrap',
+  'checklist-model',
   'maidcafeApp.controllers',
   'maidcafeApp.version'
 ]).
