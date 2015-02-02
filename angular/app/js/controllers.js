@@ -261,11 +261,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
 
   $scope.updateOrder = function(order, state){
     order.state = state;
-    console.log(order);
-    //TODO: socket put
-    /*io.socket.put('/order/modify', order, function(resData){
-      console.log(resData);
-    });*/
+    io.socket.put('/order/' + order.id, {'state': state}, function(resData){
+    });
   };
 
   // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
@@ -302,6 +299,19 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
     }
   }
 
+  function testAndModify(order, id, state){
+    if(order.id === id) {
+      order.state = state;
+      return true;
+    }
+    return false;
+  }
+
+  // https://stackoverflow.com/questions/7364150/find-object-by-id-in-array-of-javascript-objects
+  Array.prototype.filterObjects = function(key, value) {
+    return this.filter(function(x) { return x[key] === value; })
+  };
+
   (function() {
     io.socket.get('/order/pendingOrders').success(function(response){
       var groupedOrders = groupBy(response, function(item){
@@ -328,6 +338,26 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
           addToBucket(message.data);
           $scope.$apply();
           break;
+        case 'updated':
+          // just in case there are multiple kitchen sessions, check and update value in scope too
+          console.log(message);
+          switch (message.previous.category){
+            case 'drink':
+              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              break;
+            case 'entree':
+              $scope.categories.entrees.filterObjects('id', message.id).state = message.data.state;
+              break;
+            case 'main':
+              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              break;
+            case 'side':
+              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              break;
+            case 'desert':
+              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              break;
+          }
         default: return;
       }
     });

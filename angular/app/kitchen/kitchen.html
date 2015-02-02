@@ -30,7 +30,7 @@
               <td>{{order.createdAt.substr(11,12)}}</td>
               <td ng-switch on="order.state">
                 <button class="btn btn-xs btn-warning" ng-switch-when="new" ng-click="updateOrder(order, 'preparing')">Prepare order</button>
-                <button class="btn btn-xs btn-success" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">Order ready</button>
+                <button class="btn btn-xs btn-success" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">Mark ready</button>
               </td>
             </tr>
 
