@@ -289,11 +289,11 @@ module.exports = {
   /**
    * `OrderController.modify()`
    */
-  modify: function (req, res) {
+  /*modify: function (req, res) {
     return res.json({
       todo: 'modify() is not implemented yet!'
     });
-  },
+  },*/
 
   /**
    * `OrderController.main()`
@@ -311,36 +311,36 @@ module.exports = {
   /**
    * `OrderController.prepare()`
    */
-  prepare: function (req, res) {
+  /*prepare: function (req, res) {
     return res.json({
       todo: 'prepare() is not implemented yet!'
     });
-  },
+  },*/
 
 
   /**
    * `OrderController.readyToServe()`
    */
-  readyToServe: function (req, res) {
+  /*readyToServe: function (req, res) {
     return res.json({
       todo: 'readyToServe() is not implemented yet!'
     });
-  },
+  },*/
 
 
   /**
    * `OrderController.serve()`
    */
-  serve: function (req, res) {
+  /*serve: function (req, res) {
     return res.json({
       todo: 'serve() is not implemented yet!'
     });
-  },
+  },*/
 
-  pay: function (req, res) {
+  /*pay: function (req, res) {
     return res.json({
       todo: 'pay() is not implemented yet!'
     });
-  }
+  }*/
 };
 

@@ -263,6 +263,9 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
     order.state = state;
     console.log(order);
     //TODO: socket put
+    /*io.socket.put('/order/modify', order, function(resData){
+      console.log(resData);
+    });*/
   };
 
   // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
