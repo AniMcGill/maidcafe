@@ -13,6 +13,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/main', {templateUrl: 'main/main.html', controller: 'MainCtrl'});
   $routeProvider.when('/menu', {templateUrl: 'menu/menu.html', controller: 'MenuCtrl'});
   $routeProvider.when('/maid', {templateUrl: 'maid/maid.html', controller: 'MaidCtrl'});
+  $routeProvider.when('/kitchen', {templateUrl: 'kitchen/kitchen.html', controller: 'KitchenCtrl'});
   $routeProvider.otherwise({redirectTo: '/main'});
 }]).
 run(function($rootScope) {

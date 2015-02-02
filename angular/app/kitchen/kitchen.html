@@ -1,0 +1,44 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-4" ng-repeat="category in categories" ng-show="category.items.length">
+      <div class="panel panel-default">
+        <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
+        <div class="panel-body" id="{{category.name}}Panel" collapse="isCollapsed">
+          <table class="table table-hover table-condensed">
+            <col width="5%">
+            <col width="30%">
+            <col width="15%">
+            <col width="25%">
+            <col width="25%">
+            <tr>
+              <th>Table</th>
+              <th>Menu Item</th>
+              <th>State</th>
+              <th>Timestamp</th>
+              <th>Operations</th>
+            </tr>
+
+            <tr ng-repeat="order in category.items">
+              <td>{{order.table}}</td>
+              <td>{{order.menuItem.name}}</td>
+              <td ng-switch on="order.state">
+                {{order.state}}
+                <span class="glyphicon glyphicon-bell" ng-switch-when="preparing" style="color:orange"></span>
+                <span class="glyphicon glyphicon-bell" ng-switch-when="ready" style="color:green"></span>
+                <span class="glyphicon glyphicon-bell" ng-switch-default style="color:red"></span>
+              </td>
+              <td>{{order.createdAt.substr(11,12)}}</td>
+              <td ng-switch on="order.state">
+                <button class="btn btn-xs btn-warning" ng-switch-when="new" ng-click="updateOrder(order, 'preparing')">Prepare order</button>
+                <button class="btn btn-xs btn-success" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">Order ready</button>
+              </td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

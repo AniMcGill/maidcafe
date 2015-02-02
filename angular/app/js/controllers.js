@@ -248,5 +248,106 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
       });
 
     })();
+}]);
 
-  }]);
+maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
+  $scope.categories = {
+    drinks: {_id: 'drinks', items: []},
+    entrees: {_id: 'entrees', items: []},
+    mains: {_id: 'mains', items: []},
+    sides: {_id: 'sides', items: []},
+    deserts: {_id: 'deserts', items: []}
+  };
+
+  $scope.updateOrder = function(order, state){
+    order.state = state;
+    console.log(order);
+    //TODO: socket put
+  };
+
+  // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
+  function groupBy( array , f ) {
+    var groups = {};
+    array.forEach( function( o ) {
+      var group = JSON.stringify( f(o) );
+      groups[group] = groups[group] || [];
+      groups[group].push( o );
+    });
+    return Object.keys(groups).map( function( group ) {
+      return groups[group];
+    })
+  }
+
+  // ugly triaging
+  function addToBucket(datum){
+    switch (datum.category){
+      case 'drink':
+        $scope.categories.drinks.items.push(datum);
+        break;
+      case 'entree':
+        $scope.categories.entrees.items.push(datum);
+        break;
+      case 'main':
+        $scope.categories.mains.items.push(datum);
+        break;
+      case 'side':
+        $scope.categories.sides.items.push(datum);
+        break;
+      case 'desert':
+        $scope.categories.deserts.items.push(datum);
+        break;
+    }
+  }
+
+  (function() {
+    io.socket.get('/order/pendingOrders').success(function(response){
+      var groupedOrders = groupBy(response, function(item){
+        return [item.category, item.table];
+      });
+
+      groupedOrders.forEach((function(group) {
+        group.forEach(function (subgroup) {
+          addToBucket(subgroup);
+        });
+      }));
+    }).error(function (response) {console.log('error getting pending orders');});
+
+    io.socket.on('order', function(message){
+      switch (message.verb){
+        case 'created':
+          // annoying, have to populate objects ourselves
+          io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
+            message.data.menuItem = menuitem;
+          });
+          io.socket.get('/customer/' + message.data.customer, function (customer){
+            message.data.customer = customer;
+          });
+          addToBucket(message.data);
+          $scope.$apply();
+          break;
+        default: return;
+      }
+    });
+    /*
+
+    io.socket.on('order', function(message){
+      switch (message.verb){
+        case 'created':
+          // annoying, have to populate objects ourselves
+          io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
+            message.data.menuItem = menuitem;
+          });
+          io.socket.get('/customer/' + message.data.customer, function (customer){
+            message.data.customer = customer;
+          });
+          $scope.orders.push(message.data);
+          $scope.$apply();
+          break;
+        default: return;
+      }
+    });
+
+    */
+
+  })();
+}]);
