@@ -29,16 +29,8 @@
               </td>
               <td>{{order.createdAt.substr(11,12)}}</td>
               <td ng-switch on="order.state">
-                <button class="btn btn-xs btn-default" ng-switch-when="new" ng-click="updateOrder(order, 'preparing')">
-                  <span class="glyphicon glyphicon-bell" style="color:red"></span>
-                  <span class="glyphicon glyphicon-arrow-right"></span>
-                  <span class="glyphicon glyphicon-bell" style="color:orange"></span>
-                </button>
-                <button class="btn btn-xs btn-default" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">
-                  <span class="glyphicon glyphicon-bell" style="color:orange"></span>
-                  <span class="glyphicon glyphicon-arrow-right"></span>
-                  <span class="glyphicon glyphicon-bell" style="color:green"></span>
-                </button>
+                <button class="btn btn-xs btn-warning" ng-switch-when="new" ng-click="updateOrder(order, 'preparing')">Prepare order</button>
+                <button class="btn btn-xs btn-success" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">Mark ready</button>
               </td>
             </tr>
 
