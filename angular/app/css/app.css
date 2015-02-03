@@ -28,3 +28,11 @@
   content: "";
   padding: 0;
 }
+
+html, body, .container-fluid{
+  height:100%;
+}
+
+#main-row{
+  height:100%;
+}

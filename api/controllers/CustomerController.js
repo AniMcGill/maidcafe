@@ -7,6 +7,14 @@
 
 module.exports = {
 
+  activeCustomers: function (req, res) {
+    Customer.find({where: {paidAt: null}, sort:'table'}).populate('orders').exec(function (err, customers) {
+      if(err) return res.serverError(err);
+      Customer.watch(req);
+      Customer.subscribe(req.socket, customers);
+      res.json(customers);
+    });
+  }
 
 
   /**
@@ -41,16 +49,16 @@ module.exports = {
    * `CustomerController.main()`
    * Show active (unpaid) customers and their current balances
    */
-  find: function (req, res) {
+  /*find: function (req, res) {
     Customer.find({where: {paidAt: null}, sort:'table'}).populate('orders', {customer: {parent: '_id'}}).exec(function(err, customers) {
       if(err) return res.serverError(err);
       Customer.subscribe(req.socket, customers);
       return res.json(customers);
-      /*return res.view({
+      *//*return res.view({
         customers: customers
-      });*/
+      });*//*
     });
-  },
+  },*/
 
   /**
    * `CustomerController.table()`
@@ -67,10 +75,10 @@ module.exports = {
   /**
    * `CustomerController.checkout()`
    */
-  checkout: function (req, res) {
+  /*checkout: function (req, res) {
     return res.json({
       todo: 'checkout() is not implemented yet!'
     });
-  }
+  }*/
 };
 

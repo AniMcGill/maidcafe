@@ -1,0 +1,52 @@
+<div class="container-fluid">
+  <!--outer row-->
+  <div class="row" id="main-row">
+    <!--left hand side-->
+    <div class="col-xs-4">
+      <div class="row">
+        <div class="col-xs-4">
+          <form class="form-inline">
+            <label for="tableSelection">Table</label>
+            <select id="tableSelection" ng-model="filter.table" class="form-control">
+              <option value=""></option>
+              <option ng-repeat="table in tables" value="{{table}}">{{table}}</option>
+            </select>
+          </form>
+        </div>
+        <div class="col-xs-2 col-xs-offset-1">
+          <button class="btn btn-md btn-danger">Checkout selected</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="row">
+        <table class="table table-hover table-condensed">
+          <col width="5%">
+          <col width="10%">
+          <col width="60%">
+          <col width="10%">
+          <col width="15%">
+          <tr>
+            <th><span class="glyphicon glyphicon-check"></span></th>
+            <th>Table</th>
+            <th>Name</th>
+            <th>Balance</th>
+            <th>Operation</th>
+          </tr>
+          <tr ng-repeat="customer in customers | filter:filter">
+            <td><input type="checkbox" checklist-model="selectedCustomers" checklist-value="customer"></td>
+            <td>{{customer.table}}</td>
+            <td>{{customer.name}}</td>
+            <td>$ {{getTotal(customer)}}</td>
+            <td><button class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-shopping-cart"></span> Checkout</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <!--right hand side-->
+    <div class="col-xs-4 col-xs-offset-4 well" id="checkoutPane">
+      <h2><span class="glyphicon glyphicon-shopping-cart"></span> Checkout</h2>
+    </div>
+  </div>
+</div>

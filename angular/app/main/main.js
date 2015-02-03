@@ -4,7 +4,7 @@ angular.module('maidcafeApp.main', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/main', {
-    templateUrl: 'main/main.html',
+    templateUrl: '../views/main.html',
     controller: 'MainCtrl'
   });
 }])

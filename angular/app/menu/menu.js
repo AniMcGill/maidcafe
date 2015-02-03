@@ -4,7 +4,7 @@ angular.module('maidcafeApp.menu', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/menu', {
-    templateUrl: 'menu/menu.html',
+    templateUrl: '../views/menu.html',
     controller: 'MenuCtrl'
   });
 }])
