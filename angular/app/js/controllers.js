@@ -66,25 +66,7 @@ maidcafeAppControllers.controller('MenuCtrl',
         }
       }
 
-      function removeFromBucket(datum){
-        switch (datum.category){
-          case 'drink':
-            $scope.categories.drinks.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-            break;
-          case 'entree':
-            $scope.categories.entrees.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-            break;
-          case 'main':
-            $scope.categories.mains.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-            break;
-          case 'side':
-            $scope.categories.sides.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-            break;
-          case 'desert':
-            $scope.categories.deserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-            break;
-        }
-      }
+
 
       (function() {
         io.socket.get("/menuitem").success(function (response) {
@@ -154,7 +136,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
     };
 
     $scope.serveOrder = function(order) {
-      //TODO
+      io.socket.put('/order/' + order.id, {'state': 'served'});
     };
 
     function clearCustomerForm(){
@@ -195,12 +177,21 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
       }
     }
 
+    // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
+    function findByProp(arr, prop, val){
+      for (var i = 0; i< arr.length; i++){
+        if (typeof arr[i][prop] === 'undefined') continue;
+        if (arr[i][prop] === val) return arr[i];
+      }
+      return false;
+    }
+
     (function() {
       io.socket.get('/customer').success(function (response) {
         $scope.customers = response;
       }).error(function (response) { console.log('error getting customers');});
 
-      io.socket.get('/order').success(function(response) {
+      io.socket.get('/order/pendingOrders').success(function(response) {
         $scope.orders = response;
       }).error(function (response) {console.log('error getting orders');});
 
@@ -233,6 +224,15 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
             $scope.orders.push(message.data);
             $scope.$apply();
             break;
+          case 'updated':
+            // we also get notified of relationships being updated, so ignore that
+            if(!message.previous) break;
+            var previous = findByProp($scope.orders, 'id', message.id);
+            if(message.data.state === 'served') $scope.orders.splice($scope.orders.indexOf(previous), 1);
+            else previous.state = message.data.state;
+
+            $scope.$apply();
+            break;
           default: return;
         }
       });
@@ -260,9 +260,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
   };
 
   $scope.updateOrder = function(order, state){
-    order.state = state;
-    io.socket.put('/order/' + order.id, {'state': state}, function(resData){
-    });
+    io.socket.put('/order/' + order.id, {'state': state});
   };
 
   // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
@@ -299,18 +297,36 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
     }
   }
 
-  function testAndModify(order, id, state){
-    if(order.id === id) {
-      order.state = state;
-      return true;
+  function removeFromBucket(datum){
+    switch (datum.category){
+      case 'drink':
+        $scope.categories.drinks.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+        break;
+      case 'entree':
+        $scope.categories.entrees.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+        break;
+      case 'main':
+        $scope.categories.mains.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+        break;
+      case 'side':
+        $scope.categories.sides.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+        break;
+      case 'desert':
+        $scope.categories.deserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+        break;
+    }
+  }
+
+  // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
+  function findByProp(arr, prop, val, remove){
+    for (var i = 0; i< arr.length; i++){
+      if (typeof arr[i][prop] === 'undefined') continue;
+      if (arr[i][prop] === val) return arr[i];
     }
     return false;
   }
 
-  // https://stackoverflow.com/questions/7364150/find-object-by-id-in-array-of-javascript-objects
-  Array.prototype.filterObjects = function(key, value) {
-    return this.filter(function(x) { return x[key] === value; })
-  };
+
 
   (function() {
     io.socket.get('/order/pendingOrders').success(function(response){
@@ -339,48 +355,44 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
           $scope.$apply();
           break;
         case 'updated':
+          // we also get notified of relationships being updated, so ignore that
+          if(!message.previous) break;
           // just in case there are multiple kitchen sessions, check and update value in scope too
-          console.log(message);
+          var previous;
+
           switch (message.previous.category){
             case 'drink':
-              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              previous = findByProp($scope.categories.drinks.items, 'id', message.id);
               break;
             case 'entree':
-              $scope.categories.entrees.filterObjects('id', message.id).state = message.data.state;
+              previous = findByProp($scope.categories.entrees.items, 'id', message.id);
               break;
             case 'main':
-              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              previous = findByProp($scope.categories.mains.items, 'id', message.id);
               break;
             case 'side':
-              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              previous = findByProp($scope.categories.sides.items, 'id', message.id);
               break;
             case 'desert':
-              $scope.categories.drinks.filterObjects('id', message.id).state = message.data.state;
+              previous = findByProp($scope.categories.deserts.items, 'id', message.id);
               break;
           }
-        default: return;
-      }
-    });
-    /*
 
-    io.socket.on('order', function(message){
-      switch (message.verb){
-        case 'created':
-          // annoying, have to populate objects ourselves
-          io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
-            message.data.menuItem = menuitem;
-          });
-          io.socket.get('/customer/' + message.data.customer, function (customer){
-            message.data.customer = customer;
-          });
-          $scope.orders.push(message.data);
+          if(previous) {
+            if(message.data.state === 'served'){
+              removeFromBucket(previous);
+            }
+            else{
+              previous.state = message.data.state;
+            }
+
+          }
           $scope.$apply();
           break;
         default: return;
       }
     });
 
-    */
 
   })();
 }]);
