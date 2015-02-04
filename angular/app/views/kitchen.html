@@ -5,11 +5,14 @@
         <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
         <div class="panel-body" id="{{category.name}}Panel" collapse="isCollapsed">
           <table class="table table-hover table-condensed">
-            <col width="5%">
-            <col width="30%">
-            <col width="15%">
-            <col width="25%">
-            <col width="25%">
+            <colgroup>
+              <col width="5%">
+              <col width="30%">
+              <col width="15%">
+              <col width="25%">
+              <col width="25%">
+            </colgroup>
+
             <tr>
               <th>Table</th>
               <th>Menu Item</th>

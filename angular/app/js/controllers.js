@@ -10,9 +10,9 @@ maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', functio
   };
 }]);
 
-maidcafeAppControllers.controller('MainCtrl', '$scope', function($scope){
+maidcafeAppControllers.controller('MainCtrl', ['$scope','$sails','$filter', function($scope,$sails,$filter){
 
-});
+}]);
 
 maidcafeAppControllers.controller('MenuCtrl',
   ['$scope','$sails','$filter',
@@ -92,8 +92,8 @@ maidcafeAppControllers.controller('MenuCtrl',
       })();
 }]);
 
-maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
-  function($scope,$sails,$filter) {
+maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','$filter',
+  function($scope,$rootScope,$sails,$filter) {
     clearCustomerForm();
     clearOrderForm();
 
@@ -177,17 +177,9 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
       }
     }
 
-    // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
-    function findByProp(arr, prop, val){
-      for (var i = 0; i< arr.length; i++){
-        if (typeof arr[i][prop] === 'undefined') continue;
-        if (arr[i][prop] === val) return arr[i];
-      }
-      return false;
-    }
 
     (function() {
-      io.socket.get('/customer').success(function (response) {
+      io.socket.get('/customer/activeCustomers').success(function (response) {
         $scope.customers = response;
       }).error(function (response) { console.log('error getting customers');});
 
@@ -227,7 +219,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
           case 'updated':
             // we also get notified of relationships being updated, so ignore that
             if(!message.previous) break;
-            var previous = findByProp($scope.orders, 'id', message.id);
+            var previous = $rootScope.findByProp($scope.orders, 'id', message.id);
             if(message.data.state === 'served') $scope.orders.splice($scope.orders.indexOf(previous), 1);
             else previous.state = message.data.state;
 
@@ -250,7 +242,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$sails','$filter',
     })();
 }]);
 
-maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
+maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter){
   $scope.categories = {
     drinks: {_id: 'drinks', items: []},
     entrees: {_id: 'entrees', items: []},
@@ -317,15 +309,6 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
     }
   }
 
-  // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
-  function findByProp(arr, prop, val){
-    for (var i = 0; i< arr.length; i++){
-      if (typeof arr[i][prop] === 'undefined') continue;
-      if (arr[i][prop] === val) return arr[i];
-    }
-    return false;
-  }
-
   (function() {
     io.socket.get('/order/pendingOrders').success(function(response){
       var groupedOrders = groupBy(response, function(item){
@@ -360,19 +343,19 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
 
           switch (message.previous.category){
             case 'drink':
-              previous = findByProp($scope.categories.drinks.items, 'id', message.id);
+              previous = $rootScope.findByProp($scope.categories.drinks.items, 'id', message.id);
               break;
             case 'entree':
-              previous = findByProp($scope.categories.entrees.items, 'id', message.id);
+              previous = $rootScope.findByProp($scope.categories.entrees.items, 'id', message.id);
               break;
             case 'main':
-              previous = findByProp($scope.categories.mains.items, 'id', message.id);
+              previous = $rootScope.findByProp($scope.categories.mains.items, 'id', message.id);
               break;
             case 'side':
-              previous = findByProp($scope.categories.sides.items, 'id', message.id);
+              previous = $rootScope.findByProp($scope.categories.sides.items, 'id', message.id);
               break;
             case 'desert':
-              previous = findByProp($scope.categories.deserts.items, 'id', message.id);
+              previous = $rootScope.findByProp($scope.categories.deserts.items, 'id', message.id);
               break;
           }
 
@@ -389,29 +372,44 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', function($scope){
   })();
 }]);
 
-maidcafeAppControllers.controller('CashierCtrl', ['$scope', function($scope){
+maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter){
 
   $scope.customers = {};
   $scope.menuitems = {};
+  $scope.isCheckoutCollapsed = true;
 
   $scope.getTotal = function (customer){
     var total = 0.00;
     customer.orders.forEach(function(order){
-      var item = findByProp($scope.menuitems, 'id', order.menuItem);
-      console.log(item);
-      total += item.price;
+      if(!order.menuItem.price){
+        var item = $rootScope.findByProp($scope.menuitems, 'id', order.menuItem); // y u so expensive
+        order.menuItem = item; //you'll thank me at checkout
+      }
+      total += order.menuItem.price;
     });
     return total;
   };
 
-  // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
-  function findByProp(arr, prop, val){
-    for (var i = 0; i< arr.length; i++){
-      if (typeof arr[i][prop] === 'undefined') continue;
-      if (arr[i][prop] === val) return arr[i];
-    }
-    return false;
-  }
+  $scope.checkout = function(customer){
+    $scope.selectedCustomers = [customer];
+    $scope.isCheckoutCollapsed = false;
+  };
+
+  $scope.cancelCheckout = function(){
+    $scope.selectedCustomers = [];
+    $scope.isCheckoutCollapsed = true;
+  };
+
+  $scope.confirmCheckout = function(customer){
+    // mark each order as paid
+    customer.orders.forEach(function(order){
+      io.socket.put('/order/' + order.id, {paid: true});
+    });
+    // timestamp customer
+    io.socket.put('/customer/' + customer.id, {paidAt: new Date().toISOString()});
+    $scope.selectedCustomers = {};  // socket.on will take care of actually removing it from customers
+    $scope.isCheckoutCollapsed = true;
+  };
 
   (function() {
     io.socket.get('/customer/activeCustomers').success(function(response){
@@ -422,52 +420,24 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', function($scope){
       $scope.menuitems = response;
     });
 
-    /*io.socket.on('order', function(message){
+    io.socket.on('customer', function(message){
       switch (message.verb){
-        case 'created':
-          // annoying, have to populate objects ourselves
-          io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
-            message.data.menuItem = menuitem;
+        case 'addedTo':
+          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
+          // need to query the order data
+          io.socket.get('/order/' + message.addedId, function(order){
+            customer.orders.push(order);
           });
-          io.socket.get('/customer/' + message.data.customer, function (customer){
-            message.data.customer = customer;
-          });
-          addToBucket(message.data);
           $scope.$apply();
           break;
-        case 'updated':
-          // we also get notified of relationships being updated, so ignore that
-          if(!message.previous) break;
-          // just in case there are multiple kitchen sessions, check and update value in scope too
-          var previous;
-
-          switch (message.previous.category){
-            case 'drink':
-              previous = findByProp($scope.categories.drinks.items, 'id', message.id);
-              break;
-            case 'entree':
-              previous = findByProp($scope.categories.entrees.items, 'id', message.id);
-              break;
-            case 'main':
-              previous = findByProp($scope.categories.mains.items, 'id', message.id);
-              break;
-            case 'side':
-              previous = findByProp($scope.categories.sides.items, 'id', message.id);
-              break;
-            case 'desert':
-              previous = findByProp($scope.categories.deserts.items, 'id', message.id);
-              break;
-          }
-
-          if(previous) {
-            if(message.data.state === 'served') removeFromBucket(previous);
-            else previous.state = message.data.state;
-          }
+        case 'created':
+          // simply push to customers since orders are always empty on new customers
+          $scope.customers.push(message.data);
           $scope.$apply();
           break;
         default: return;
       }
-    });*/
+    });
 
   })();
 }]);

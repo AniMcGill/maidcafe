@@ -27,4 +27,13 @@ run(function($rootScope) {
       if(!expected) return true;
       return expected.table === actual.table;
     }
+
+    // http://stackoverflow.com/questions/12946353/javascript-find-object-in-array-by-value-and-append-additional-value
+    $rootScope.findByProp = function (arr, prop, val){
+      for (var i = 0; i< arr.length; i++){
+        if (typeof arr[i][prop] === 'undefined') continue;
+        if (arr[i][prop] === val) return arr[i];
+      }
+      return false;
+    }
 });
