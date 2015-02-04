@@ -15,8 +15,8 @@ maidcafeAppControllers.controller('MainCtrl', ['$scope','$sails','$filter', func
 }]);
 
 maidcafeAppControllers.controller('MenuCtrl',
-  ['$scope','$sails','$filter',
-    function($scope,$sails,$filter) {
+  ['$scope', '$rootScope','$sails','$filter',
+    function($scope, $rootScope,$sails,$filter) {
 
       // collapse the add menu by default
       clearForm();
@@ -29,10 +29,10 @@ maidcafeAppControllers.controller('MenuCtrl',
       };
 
       $scope.create = function(item){
-        io.socket.post('/menuitem/create', item, function(data) {
-          if(data){
-            clearForm();
-          }
+        io.socket.post('/menuitem/create', item).success(function(data){
+          if(data) clearForm();
+        }).error(function(err){
+          $rootScope.alerts.push({type: 'danger', msg: 'ERROR: Item not created. Verify all fields are filled and shortname is unique.'});
         });
       };
 
@@ -74,7 +74,7 @@ maidcafeAppControllers.controller('MenuCtrl',
             addToBucket(datum);
           });
 
-        }).error(function (response) { console.log('error');});
+        }).error(function (response) { $rootScope.alerts.push({type: 'warning', msg: 'There was a problem getting the menu. Please try again.'});});
 
         io.socket.on('menuitem', function(message){
           switch (message.verb){
@@ -113,11 +113,9 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
         table: $scope.newOrder.table,
         name: item.name
       };
-      io.socket.post('/customer/create', newCustomerData, function(data){
-        if(data){
-          clearCustomerForm();
-        }
-      });
+      io.socket.post('/customer/create', newCustomerData)
+        .success(function(data){ if(data) clearCustomerForm(); })
+        .error(function(err){ $rootScope.alerts.push({type:'danger', msg: 'ERROR: Customer not added. Please try again.'});});
     };
 
     $scope.createOrder = function(data){
@@ -128,7 +126,8 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
           customer: data.customer,
           menuItem: order
         };
-        io.socket.post('/order/create', orderObject);
+        io.socket.post('/order/create', orderObject)
+          .error(function(err){ $rootScope.alerts.push({type:'danger', msg: 'ERROR: Order not created. Please try again.'});});
       });
 
       // guess everything went well
@@ -136,7 +135,8 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
     };
 
     $scope.serveOrder = function(order) {
-      io.socket.put('/order/' + order.id, {'state': 'served'});
+      io.socket.put('/order/' + order.id, {'state': 'served'})
+        .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'ERROR: Order not updated. Please try again.'});});
     };
 
     function clearCustomerForm(){
@@ -181,17 +181,17 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
     (function() {
       io.socket.get('/customer/activeCustomers').success(function (response) {
         $scope.customers = response;
-      }).error(function (response) { console.log('error getting customers');});
+      }).error(function (response) { $rootScope.alerts.push({type: 'warning', msg: 'Could not get customer list.'});});
 
       io.socket.get('/order/pendingOrders').success(function(response) {
         $scope.orders = response;
-      }).error(function (response) {console.log('error getting orders');});
+      }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get pending orders.'});});
 
       io.socket.get('/menuitem').success(function (response) {
         response.forEach(function (datum){
           addToBucket(datum);
         });
-      }).error(function (response) {console.log('error getting menu');});
+      }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
       io.socket.on('customer', function(message){
         switch (message.verb){
@@ -207,12 +207,13 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
         switch (message.verb){
           case 'created':
             // annoying, have to populate objects ourselves
-            io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
-              message.data.menuItem = menuitem;
-            });
-            io.socket.get('/customer/' + message.data.customer, function (customer){
-              message.data.customer = customer;
-            });
+            io.socket.get('/menuitem/' + message.data.menuItem)
+              .success(function(menuitem){ message.data.menuItem = menuitem;})
+              .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating the orders. Please refresh.'});});
+            io.socket.get('/customer/' + message.data.customer)
+              .success(function(customer){ message.data.customer = customer;})
+              .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating the orders. Please refresh.'});});
+
             $scope.orders.push(message.data);
             $scope.$apply();
             break;
@@ -252,7 +253,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
   };
 
   $scope.updateOrder = function(order, state){
-    io.socket.put('/order/' + order.id, {'state': state});
+    io.socket.put('/order/' + order.id, {'state': state})
+      .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'ERROR: There was a problem updating the order. Please try again.'});});
   };
 
   // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
@@ -320,18 +322,19 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
           addToBucket(subgroup);
         });
       }));
-    }).error(function (response) {console.log('error getting pending orders');});
+    }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get pending orders.'});});
 
     io.socket.on('order', function(message){
       switch (message.verb){
         case 'created':
           // annoying, have to populate objects ourselves
-          io.socket.get('/menuitem/' + message.data.menuItem, function (menuitem){
-            message.data.menuItem = menuitem;
-          });
-          io.socket.get('/customer/' + message.data.customer, function (customer){
-            message.data.customer = customer;
-          });
+          io.socket.get('/menuitem/' + message.data.menuItem)
+            .success(function(menuitem) { message.data.menuItem = menuitem;})
+            .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
+          io.socket.get('/customer/' + message.data.customer)
+            .success(function(customer) { message.data.customer = customer; })
+            .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
+
           addToBucket(message.data);
           $scope.$apply();
           break;
@@ -403,31 +406,33 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
   $scope.confirmCheckout = function(customer){
     // mark each order as paid
     customer.orders.forEach(function(order){
-      io.socket.put('/order/' + order.id, {paid: true});
+      io.socket.put('/order/' + order.id, {paid: true})
+        .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'ERROR: There was a problem with the checkout. Please try again.'});});
     });
     // timestamp customer
-    io.socket.put('/customer/' + customer.id, {paidAt: new Date().toISOString()});
+    io.socket.put('/customer/' + customer.id, {paidAt: new Date().toISOString()})
+      .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'ERROR: There was a problem with the checkout. Please try again.'});});
     $scope.selectedCustomers = {};  // socket.on will take care of actually removing it from customers
     $scope.isCheckoutCollapsed = true;
   };
 
   (function() {
-    io.socket.get('/customer/activeCustomers').success(function(response){
-      $scope.customers = response;
-    });
+    io.socket.get('/customer/activeCustomers')
+      .success(function(response){ $scope.customers = response;})
+      .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get customers.'});});
 
-    io.socket.get('/menuitem').success(function(response){
-      $scope.menuitems = response;
-    });
+    io.socket.get('/menuitem')
+      .success(function(response){ $scope.menuitems = response;})
+      .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
     io.socket.on('customer', function(message){
       switch (message.verb){
         case 'addedTo':
           var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
           // need to query the order data
-          io.socket.get('/order/' + message.addedId, function(order){
-            customer.orders.push(order);
-          });
+          io.socket.get('/order/' + message.addedId)
+            .success(function(order){ customer.orders.push(order);})
+            .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating customers. Please refresh.'});});
           $scope.$apply();
           break;
         case 'created':

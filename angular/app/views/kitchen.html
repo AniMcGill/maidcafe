@@ -1,4 +1,5 @@
 <div class="container-fluid">
+  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
     <div class="col-xs-4" ng-repeat="category in categories" ng-show="category.items.length">
       <div class="panel panel-default">

@@ -1,4 +1,5 @@
 <div class="container-fluid">
+  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
     <form class="form-inline">
       <div class="col-xs-2">

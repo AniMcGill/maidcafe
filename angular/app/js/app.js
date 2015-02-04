@@ -18,6 +18,10 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/main'});
 }]).
 run(function($rootScope) {
+    $rootScope.alerts = [];
+    $rootScope.closeAlert = function(index){
+      $rootScope.alerts.splice(index, 1);
+    };
     $rootScope.tables = [];
     for (var i = 1; i <=30; i++){
       $rootScope.tables.push(i);
