@@ -1,1 +1,24 @@
-<p>This is the partial for view 1.</p>
+<div class="jumbotron">
+  <div class="container">
+
+    <h1>Maid Café</h1>
+    <p>
+      Presented by the McGill Students' Anime Club
+    </p>
+
+    <div class="well">
+      <form class="form-inline">
+        <label for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" ng-model="user.username" class="form-control" required>
+
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" ng-model="user.password" class="form-control" required>
+
+        <button class="btn btn-md btn-primary" type="button" ng-click="login()">
+          <span class="glyphicon glyphicon-user"></span> Login
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>

@@ -11,7 +11,9 @@ maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', functio
 }]);
 
 maidcafeAppControllers.controller('MainCtrl', ['$scope','$sails','$filter', function($scope,$sails,$filter){
-
+  $scope.login = function(){
+    console.log('TODO');
+  };
 }]);
 
 maidcafeAppControllers.controller('MenuCtrl',
