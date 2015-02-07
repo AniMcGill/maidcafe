@@ -11,10 +11,12 @@
 
 module.exports.bootstrap = function(cb) {
 
-  //User.create({username: 'admin', password: 'goshujinsama'}).exec();
   // in production
 
-  User.create({username: 'admin', password: process.env.ADMIN_PASS}).exec();
+  if(process.env.ADMIN_PASS) User.create({username: 'admin', password: process.env.ADMIN_PASS}).exec(cb);
+  if(process.env.MAID_PASS) User.create({username: 'maid', password: process.env.MAID_PASS}).exec(cb);
+  if(process.env.EXEC_PASS) User.create({username: 'exec', password: process.env.EXEC_PASS}).exec(cb);
+
   /*if(process.env.MAID_USER && process.env.MAID_PASS) User.create({username: process.env.MAID_USER, password: process.env.MAID_PASS}).exec();
   if(process.env.KITCHEN_USER && process.env.KITCHEN_PASS) User.create({username: process.env.KITCHEN_USER, password: process.env.KITCHEN_PASS}).exec();
   if(process.env.CASHIER_USER && process.env.CASHIER_PASS) User.create({username: process.env.CASHIER_USER, password: process.env.CASHIER_PASS}).exec();*/

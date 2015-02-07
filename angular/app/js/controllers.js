@@ -237,6 +237,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
             $scope.$apply();
             break;
+          //TODO: on destroyed
           default: return;
         }
       });
@@ -379,6 +380,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
           }
           $scope.$apply();
           break;
+        //TODO: on destroyed
         default: return;
       }
     });
@@ -451,6 +453,7 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
           $scope.customers.push(message.data);
           $scope.$apply();
           break;
+        // TODO: whatever verb gets applied when an order is deleted, removedFrom?
         default: return;
       }
     });

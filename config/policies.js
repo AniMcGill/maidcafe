@@ -34,7 +34,8 @@ module.exports.policies = {
     '*': 'sessionAuth'
   },
   'OrderController': {
-    '*': 'sessionAuth'
+    '*': 'sessionAuth',
+    destroy: ['isAdmin', 'sessionAuth']
   }
 
   /***************************************************************************
