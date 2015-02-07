@@ -15,6 +15,11 @@ module.exports = {
   },
 
   login: function(req, res){
+    // ugly hack for checking if authenticated on socket
+    if(req.isSocket){
+      if(req.session.passport.user) return res.json({user: req.session.passport.user});
+      else return res.json({});
+    }
 
     passport.authenticate('local', function(err, user, info){
       if(err || !user) return res.send({message: info.message, user:user});

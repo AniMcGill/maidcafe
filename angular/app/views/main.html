@@ -5,23 +5,24 @@
     <p>
       Presented by the McGill Students' Anime Club
     </p>
+    <div collapse="isLoginCollapsed">
+      <div class="well">
+        <form class="form-inline" method="post" action="/login">
+          <label for="usernameInput">Username</label>
+          <input type="text" id="usernameInput" ng-model="user.username" name="username" class="form-control" required>
 
-    <div class="well">
-      <form class="form-inline" method="post" action="/login">
-        <label for="usernameInput">Username</label>
-        <input type="text" id="usernameInput" ng-model="user.username" name="username" class="form-control" required>
+          <label for="passwordInput">Password</label>
+          <input type="password" id="passwordInput" ng-model="user.password" name="password" class="form-control" required>
 
-        <label for="passwordInput">Password</label>
-        <input type="password" id="passwordInput" ng-model="user.password" name="password" class="form-control" required>
+          <button class="btn btn-md btn-primary" type="submit">
+            <span class="glyphicon glyphicon-user"></span> Login
+          </button>
 
-        <button class="btn btn-md btn-primary" type="submit">
-          <span class="glyphicon glyphicon-user"></span> Login
-        </button>
-
-        <!--<button class="btn btn-md btn-primary" type="button" ng-click="login()">
-          <span class="glyphicon glyphicon-user"></span> Login
-        </button>-->
-      </form>
+          <!--<button class="btn btn-md btn-primary" type="button" ng-click="login()">
+            <span class="glyphicon glyphicon-user"></span> Login
+          </button>-->
+        </form>
+      </div>
     </div>
 
   </div>
