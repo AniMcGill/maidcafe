@@ -11,13 +11,14 @@ maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', functio
 }]);
 
 maidcafeAppControllers.controller('MainCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope, $sails,$filter){
-  $scope.login = function(){
+
+  /*$scope.login = function(){
     io.socket.post('/login', $scope.user)
       .success(function(data){
         console.log(data);
       })
       .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'ERROR: Invalid credentials. Please try again.'});});
-  };
+  };*/
 }]);
 
 maidcafeAppControllers.controller('MenuCtrl',

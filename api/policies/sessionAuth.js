@@ -11,6 +11,18 @@ module.exports = function(req, res, next) {
   // User is allowed, proceed to the next policy,
   // or if this is the last policy, the controller
   if(req.session.passport.user) return next();
+  /*if(req.isSocket){
+    if(req.session && req.session.passport && req.session.passport.user){
+      sails.config.passport.initialize()(req, res, function() {
+        sails.config.passport.session()(req, res, function() {
+          res.locals.user = req.user;
+          next();
+        });
+      });
+    } else req.json(401);
+  }
+  else if(req.isAuthenticated()) return next();*/
+
   /*if (req.session.authenticated) {
     return next();
   }*/
