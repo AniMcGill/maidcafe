@@ -28,6 +28,8 @@ module.exports.http = {
   ****************************************************************************/
 
   middleware: {
+    passportInit: require('passport').initialize(),
+    passportSession: require('passport').session(),
 
   /***************************************************************************
   *                                                                          *
@@ -40,6 +42,8 @@ module.exports.http = {
        'startRequestTimer',
        'cookieParser',
        'session',
+        'passportInit',
+        'passportSession',
        'myRequestLogger',
        'bodyParser',
        'handleBodyParserError',

@@ -20,7 +20,9 @@ module.exports = {
       if(err || !user) return res.send({message: info.message, user:user});
       req.logIn(user, function(err){
         if(err) res.send(err);
-        return res.send({message: info.message, user:user});
+        //return res.send({message: info.message, user:user});
+        //res.redirect('/');
+        return res.json({message: info.message, user:user});
       });
     })(req, res);
   },

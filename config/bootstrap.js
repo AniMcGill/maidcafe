@@ -11,6 +11,13 @@
 
 module.exports.bootstrap = function(cb) {
 
+  User.create({username: 'admin', password: 'goshujinsama'}).exec();
+  // in production
+  if(process.env.ADMIN_USER && process.env.ADMIN_PASS) User.create({username: process.env.ADMIN_USER, password: process.env.ADMIN_PASS});
+  if(process.env.MAID_USER && process.env.MAID_PASS) User.create({username: process.env.MAID_USER, password: process.env.MAID_PASS});
+  if(process.env.KITCHEN_USER && process.env.KITCHEN_PASS) User.create({username: process.env.KITCHEN_USER, password: process.env.KITCHEN_PASS});
+  if(process.env.CASHIER_USER && process.env.CASHIER_PASS) User.create({username: process.env.CASHIER_USER, password: process.env.CASHIER_PASS});
+
   // It's very important to trigger this callback method when you are finished
   // with the bootstrap!  (otherwise your server will never lift, since it's waiting on the bootstrap)
   cb();

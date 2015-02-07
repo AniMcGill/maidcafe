@@ -26,7 +26,16 @@ module.exports.policies = {
   *                                                                          *
   ***************************************************************************/
 
-  // '*': true,
+  '*': true,
+  'MenuItemController': {
+    '*': 'sessionAuth'
+  },
+  'CustomerController': {
+    '*': 'sessionAuth'
+  },
+  'OrderController': {
+    '*': 'sessionAuth'
+  }
 
   /***************************************************************************
   *                                                                          *
