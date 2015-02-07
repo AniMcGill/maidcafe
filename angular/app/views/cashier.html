@@ -64,8 +64,9 @@
               <th>Menu item</th>
               <th>Price</th>
             </tr>
-            <tr ng-repeat="customerOrder in selectedCustomer.orders">
-              <td>{{customerOrder.menuItem.name}}</td>
+            <tr ng-repeat="customerOrder in selectedCustomer.orders" ng-switch on="customerOrder.state">
+              <td ng-switch-when="served">{{customerOrder.menuItem.name}}</td>
+              <td ng-switch-default style="color:red;"><span class="glyphicon glyphicon-warning-sign"></span> {{customerOrder.menuItem.name}}</td>
               <td>${{customerOrder.menuItem.price}}</td>
             </tr>
           </table>
