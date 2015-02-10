@@ -38,7 +38,7 @@
   <hr>
 
   <div class="row">
-    <div class="panel panel-default col-xs-3" ng-repeat="category in categories" ng-show="category.items.length">
+    <div class="panel panel-default col-xs-3 table-responsive" ng-repeat="category in categories" ng-show="category.items.length">
       <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
       <div class="panel-body" id="{{category._id}}Panel" collapse="isCollapsed">
         <table class="table table-hover table-condensed">

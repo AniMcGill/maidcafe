@@ -1,10 +1,10 @@
 <div class="container-fluid">
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
-    <div class="col-xs-4" ng-repeat="category in categories" ng-show="category.items.length">
+    <div class="col-xs-4 table-responsive" ng-repeat="category in categories" ng-show="category.items.length">
       <div class="panel panel-default">
         <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
-        <div class="panel-body" id="{{category.name}}Panel" collapse="isCollapsed">
+        <div class="panel-body table-responsive" id="{{category.name}}Panel" collapse="isCollapsed">
           <table class="table table-hover table-condensed">
             <colgroup>
               <col width="5%">
