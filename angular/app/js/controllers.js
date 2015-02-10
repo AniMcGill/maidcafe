@@ -11,10 +11,14 @@ maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', functio
 }]);
 
 maidcafeAppControllers.controller('MainCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope, $sails,$filter){
+  $rootScope.isNavBarVisible = false;
   (function() {
     $sails.get('/login')
       .success(function(data){
-        if(data.user) $scope.isLoginCollapsed = true;
+        if(data.user) {
+          $scope.isLoginCollapsed = true;
+          $rootScope.isNavBarVisible = true;
+        }
       });
 
   })();

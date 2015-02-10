@@ -38,7 +38,7 @@
       </div>
 
       <div id="mainMenu" collapse="isNavCollapsed" ng-controller="NavBarCtrl">
-        <ul class="nav navbar-nav">
+        <ul class="nav navbar-nav" ng-show="isNavBarVisible">
           <!--<li ng-class="{active: isActive('/')}"><a href="#/main">Main</a></li>-->
           <li ng-class="{active: isActive('/menu')}"><a href="#/menu">Menu</a> </li>
           <li ng-class="{active: isActive('/maid')}"><a href="#/maid">Maid</a></li>

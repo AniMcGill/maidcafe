@@ -18,6 +18,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/main'});
 }]).
 run(function($rootScope) {
+    $rootScope.isNavBarVisible = true;
     $rootScope.alerts = [];
     $rootScope.closeAlert = function(index){
       $rootScope.alerts.splice(index, 1);
