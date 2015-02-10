@@ -2,7 +2,7 @@
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
     <form class="form-inline">
-      <div class="col-xs-2">
+      <div class="col-sm-2">
         <label for="tableSelection">Table</label>
         <select id="tableSelection" ng-model="newOrder.table" class="form-control" required>
           <option value=""></option>
@@ -11,7 +11,7 @@
       </div>
 
       <!--Add a customer while we're at it-->
-      <div class="col-xs-4 col-xs-offset-1">
+      <div class="col-sm-4 col-sm-offset-1">
         <label for="customerNameInput">Add customer: </label>
         <input id="customerNameInput" type="text" class="form-control" ng-model="newCustomer.name" required>
 
@@ -34,7 +34,7 @@
     <div class="well">
       <form class="form-inline">
         <div class="row">
-          <div class="col-xs-3">
+          <div class="col-sm-3">
             <label for="customerSelection">Customer</label>
             <select id="customerSelection" ng-model="newOrder.customer" class="form-control"required>
               <option ng-repeat="customer in customers | filter:newOrder.table" ng-show="customer.table == newOrder.table" value="{{customer.id}}">{{customer.name}}</option>
