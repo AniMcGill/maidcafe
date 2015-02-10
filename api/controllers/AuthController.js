@@ -22,9 +22,10 @@ module.exports = {
     }
 
     passport.authenticate('local', function(err, user, info){
-      if(err || !user) return res.send({message: info.message, user:user});
+      if(err || !user) return res.forbidden(info.message); //res.send({message: info.message, user:user});
       req.logIn(user, function(err){
-        if(err) res.send(err);
+        //if(err) res.send(err);
+        if(err) res.forbidden('Invalid credentials');
         // ugly hack for sockets
         res.redirect('/');
         //return res.json({message: info.message, user:user});
