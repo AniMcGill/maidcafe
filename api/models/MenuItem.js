@@ -23,7 +23,7 @@ module.exports = {
   	},
   	category: {
   		type: 'string',
-  		enum: ['entree', 'main', 'side', 'desert', 'drink'],
+  		enum: ['entree', 'main', 'side', 'dessert', 'drink'],
   		required: true
   	}
   }

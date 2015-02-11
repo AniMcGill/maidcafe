@@ -42,7 +42,7 @@ maidcafeAppControllers.controller('MenuCtrl',
         entrees: {_id: 'entrees', items: []},
         mains: {_id: 'mains', items: []},
         sides: {_id: 'sides', items: []},
-        deserts: {_id: 'deserts', items: []}
+        desserts: {_id: 'desserts', items: []}
       };
 
       $scope.create = function(item){
@@ -77,8 +77,8 @@ maidcafeAppControllers.controller('MenuCtrl',
           case 'side':
             $scope.categories.sides.items.push(datum);
             break;
-          case 'desert':
-            $scope.categories.deserts.items.push(datum);
+          case 'dessert':
+            $scope.categories.desserts.items.push(datum);
             break;
         }
       }
@@ -120,7 +120,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
       entrees: {_id: 'entrees', items: []},
       mains: {_id: 'mains', items: []},
       sides: {_id: 'sides', items: []},
-      deserts: {_id: 'deserts', items: []}
+      desserts: {_id: 'desserts', items: []}
     };
 
     $scope.createCustomer = function(item){
@@ -186,8 +186,8 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
         case 'side':
           $scope.categories.sides.items.push(datum);
           break;
-        case 'desert':
-          $scope.categories.deserts.items.push(datum);
+        case 'dessert':
+          $scope.categories.desserts.items.push(datum);
           break;
       }
     }
@@ -265,7 +265,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
     entrees: {_id: 'entrees', items: []},
     mains: {_id: 'mains', items: []},
     sides: {_id: 'sides', items: []},
-    deserts: {_id: 'deserts', items: []}
+    desserts: {_id: 'desserts', items: []}
   };
 
   $scope.updateOrder = function(order, state){
@@ -301,8 +301,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
       case 'side':
         $scope.categories.sides.items.push(datum);
         break;
-      case 'desert':
-        $scope.categories.deserts.items.push(datum);
+      case 'dessert':
+        $scope.categories.desserts.items.push(datum);
         break;
     }
   }
@@ -321,8 +321,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
       case 'side':
         $scope.categories.sides.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
         break;
-      case 'desert':
-        $scope.categories.deserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
+      case 'dessert':
+        $scope.categories.desserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
         break;
     }
   }
@@ -373,8 +373,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
             case 'side':
               previous = $rootScope.findByProp($scope.categories.sides.items, 'id', message.id);
               break;
-            case 'desert':
-              previous = $rootScope.findByProp($scope.categories.deserts.items, 'id', message.id);
+            case 'dessert':
+              previous = $rootScope.findByProp($scope.categories.desserts.items, 'id', message.id);
               break;
           }
 
