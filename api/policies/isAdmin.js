@@ -11,15 +11,10 @@ module.exports = function(req, res, next) {
   // User is allowed, proceed to the next policy,
   // or if this is the last policy, the controller
   if(req.session.passport.user) {
-    User.find({id: req.session.passport.user}).exec(function(err, user){
-      if(err) return res.forbidden('You are not permitted to perform this action.');
+    User.findOne({id: req.session.passport.user}).exec(function(err, user){
       if(user.isAdmin) return next();
       else return res.forbidden('You are not permitted to perform this action.');
     })
   }
 
-
-  // User is not allowed
-  // (default res.forbidden() behavior can be overridden in `config/403.js`)
-  return res.forbidden('You are not permitted to perform this action.');
 };

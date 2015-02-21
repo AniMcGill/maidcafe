@@ -1,10 +1,10 @@
 <div class="container-fluid">
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
-    <div class="col-sm-4 table-responsive" ng-repeat="category in categories" ng-show="category.items.length">
+    <div class="col-sm-4 table-responsive" ng-repeat="(category, items) in categories" ng-show="items.length">
       <div class="panel panel-default">
-        <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category._id.toUpperCase()}}</a></div>
-        <div class="panel-body table-responsive" id="{{category.name}}Panel" collapse="isCollapsed">
+        <div class="panel-heading"><a ng-click="isCollapsed = !isCollapsed">{{category.toUpperCase()}}</a></div>
+        <div class="panel-body table-responsive" id="{{category}}Panel" collapse="isCollapsed">
           <table class="table table-hover table-condensed">
             <colgroup>
               <col width="5%">
@@ -22,7 +22,7 @@
               <th>Operations</th>
             </tr>
 
-            <tr ng-repeat="order in category.items">
+            <tr ng-repeat="order in items">
               <td>{{order.table}}</td>
               <td>{{order.menuItem.name}}</td>
               <td ng-switch on="order.state">
@@ -35,6 +35,7 @@
               <td ng-switch on="order.state">
                 <button class="btn btn-xs btn-warning" ng-switch-when="new" ng-click="updateOrder(order, 'preparing')">Prepare order</button>
                 <button class="btn btn-xs btn-success" ng-switch-when="preparing" ng-click="updateOrder(order, 'ready')">Mark ready</button>
+                <button class="btn btn-xs btn-danger" ng-switch-when="new" ng-click="deleteOrder(order)"><span class="glyphicon glyphicon-trash"></span> </button>
               </td>
             </tr>
 

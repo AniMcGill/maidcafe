@@ -22,27 +22,18 @@ maidcafeAppControllers.controller('MainCtrl', ['$scope', '$rootScope','$sails','
       });
 
   })();
-  /*$scope.login = function(){
-    io.socket.post('/login', $scope.user)
-      .success(function(data){
-        console.log(data);
-      })
-      .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'ERROR: Invalid credentials. Please try again.'});});
-  };*/
+
 }]);
 
-maidcafeAppControllers.controller('MenuCtrl',
-  ['$scope', '$rootScope','$sails','$filter',
-    function($scope, $rootScope,$sails,$filter) {
-
+maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter) {
       // collapse the add menu by default
       clearForm();
       $scope.categories = {
-        drinks: {_id: 'drinks', items: []},
-        entrees: {_id: 'entrees', items: []},
-        mains: {_id: 'mains', items: []},
-        sides: {_id: 'sides', items: []},
-        desserts: {_id: 'desserts', items: []}
+        drink: [],
+        entree: [],
+        main: [],
+        side: [],
+        dessert: []
       };
 
       $scope.create = function(item){
@@ -53,40 +44,15 @@ maidcafeAppControllers.controller('MenuCtrl',
         });
       };
 
-      /*$scope.destroy = function(item){
-        io.socket.get('/menuitem/destroy/' + item);
-      };*/
-
       function clearForm(){
         $scope.item = {};
         $scope.isAddMenuCollapsed = true;
       }
 
-      // ugly triaging
-      function addToBucket(datum){
-        switch (datum.category){
-          case 'drink':
-            $scope.categories.drinks.items.push(datum);
-            break;
-          case 'entree':
-            $scope.categories.entrees.items.push(datum);
-            break;
-          case 'main':
-            $scope.categories.mains.items.push(datum);
-            break;
-          case 'side':
-            $scope.categories.sides.items.push(datum);
-            break;
-          case 'dessert':
-            $scope.categories.desserts.items.push(datum);
-            break;
-        }
-      }
-
       (function() {
         $sails.get("/menuitem").success(function (response) {
           response.forEach(function(datum){
-            addToBucket(datum);
+            $scope.categories[datum.category].push(datum);
           });
 
         }).error(function (response) { $rootScope.alerts.push({type: 'warning', msg: 'There was a problem getting the menu. Please try again.'});});
@@ -94,33 +60,27 @@ maidcafeAppControllers.controller('MenuCtrl',
         $sails.on('menuitem', function(message){
           switch (message.verb){
             case 'created':
-              addToBucket(message.data);
+              $scope.categories[message.data.category].push(message.data);
               $scope.$apply();
               break;
-            /*case 'destroyed':
-              removeFromBucket(message.previous);
-              $scope.$apply();
-              break;*/
             default: return;
           }
         });
       })();
 }]);
 
-maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','$filter',
-  function($scope,$rootScope,$sails,$filter) {
+maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','$filter', function($scope,$rootScope,$sails,$filter) {
     clearCustomerForm();
     clearOrderForm();
 
-    // models
     $scope.customers = {};
     $scope.orders = {};
     $scope.categories = {
-      drinks: {_id: 'drinks', items: []},
-      entrees: {_id: 'entrees', items: []},
-      mains: {_id: 'mains', items: []},
-      sides: {_id: 'sides', items: []},
-      desserts: {_id: 'desserts', items: []}
+      drink: [],
+      entree: [],
+      main: [],
+      side: [],
+      dessert: []
     };
 
     $scope.createCustomer = function(item){
@@ -155,12 +115,8 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
     };
 
     function clearCustomerForm(){
-      if($scope.newCustomer){
-        $scope.newCustomer.name = "";
-      }
-      else {
-        $scope.newCustomer = {};
-      }
+      if($scope.newCustomer) $scope.newCustomer.name = "";
+      else $scope.newCustomer = {};
     }
 
     function clearOrderForm(){
@@ -170,28 +126,6 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
         $scope.newOrder.orders = [];
       }
     }
-
-    // ugly triaging
-    function addToBucket(datum){
-      switch (datum.category){
-        case 'drink':
-          $scope.categories.drinks.items.push(datum);
-          break;
-        case 'entree':
-          $scope.categories.entrees.items.push(datum);
-          break;
-        case 'main':
-          $scope.categories.mains.items.push(datum);
-          break;
-        case 'side':
-          $scope.categories.sides.items.push(datum);
-          break;
-        case 'dessert':
-          $scope.categories.desserts.items.push(datum);
-          break;
-      }
-    }
-
 
     (function() {
       $sails.get('/customer/activeCustomers').success(function (response) {
@@ -204,7 +138,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
       $sails.get('/menuitem').success(function (response) {
         response.forEach(function (datum){
-          addToBucket(datum);
+          $scope.categories[datum.category].push(datum);
         });
       }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
@@ -241,7 +175,14 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
             $scope.$apply();
             break;
-          //TODO: on destroyed
+          case 'destroyed':
+            // we also get notified of relationships being updated, so ignore that
+            if(!message.previous) break;
+            var previous = $rootScope.findByProp($scope.orders, 'id', message.id);
+            $scope.orders.splice($scope.orders.indexOf(previous), 1);
+
+            $scope.$apply();
+            break;
           default: return;
         }
       });
@@ -249,7 +190,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
       $sails.on('menuitem', function(message){
         switch (message.verb){
           case 'created':
-            addToBucket(message.data);
+            $scope.categories[message.data.category].push(message.data);
             $scope.$apply();
             break;
           default: return;
@@ -261,16 +202,22 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
 maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter){
   $scope.categories = {
-    drinks: {_id: 'drinks', items: []},
-    entrees: {_id: 'entrees', items: []},
-    mains: {_id: 'mains', items: []},
-    sides: {_id: 'sides', items: []},
-    desserts: {_id: 'desserts', items: []}
+    drink: [],
+    entree: [],
+    main: [],
+    side: [],
+    dessert: []
   };
 
   $scope.updateOrder = function(order, state){
     $sails.put('/order/' + order.id, {'state': state})
       .error(function(err) { $rootScope.alerts.push({type: 'danger', msg: 'ERROR: There was a problem updating the order. Please try again.'});});
+  };
+
+  $scope.deleteOrder = function(order){
+    $sails.delete('/order/' + order.id)
+      .success(function(res) { if(typeof res == 'string') $rootScope.alerts.push({type: 'danger', msg: res});})
+      .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'ERROR: There was a problem deleting the order. Please try again.'}); });
   };
 
   // https://codereview.stackexchange.com/questions/37028/grouping-elements-in-array-by-multiple-properties
@@ -286,47 +233,6 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
     })
   }
 
-  // ugly triaging
-  function addToBucket(datum){
-    switch (datum.category){
-      case 'drink':
-        $scope.categories.drinks.items.push(datum);
-        break;
-      case 'entree':
-        $scope.categories.entrees.items.push(datum);
-        break;
-      case 'main':
-        $scope.categories.mains.items.push(datum);
-        break;
-      case 'side':
-        $scope.categories.sides.items.push(datum);
-        break;
-      case 'dessert':
-        $scope.categories.desserts.items.push(datum);
-        break;
-    }
-  }
-
-  function removeFromBucket(datum){
-    switch (datum.category){
-      case 'drink':
-        $scope.categories.drinks.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-        break;
-      case 'entree':
-        $scope.categories.entrees.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-        break;
-      case 'main':
-        $scope.categories.mains.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-        break;
-      case 'side':
-        $scope.categories.sides.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-        break;
-      case 'dessert':
-        $scope.categories.desserts.items.splice($scope.categories.drinks.items.indexOf(datum), 1);
-        break;
-    }
-  }
-
   (function() {
     $sails.get('/order/pendingOrders').success(function(response){
       var groupedOrders = groupBy(response, function(item){
@@ -335,7 +241,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
 
       groupedOrders.forEach((function(group) {
         group.forEach(function (subgroup) {
-          addToBucket(subgroup);
+          $scope.categories[subgroup.category].push(subgroup);
         });
       }));
     }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get pending orders.'});});
@@ -351,40 +257,26 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
             .success(function(customer) { message.data.customer = customer; })
             .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
 
-          addToBucket(message.data);
+          $scope.categories[message.data.category].push(message.data);
           $scope.$apply();
           break;
         case 'updated':
           // we also get notified of relationships being updated, so ignore that
           if(!message.previous) break;
-          // just in case there are multiple kitchen sessions, check and update value in scope too
-          var previous;
-
-          switch (message.previous.category){
-            case 'drink':
-              previous = $rootScope.findByProp($scope.categories.drinks.items, 'id', message.id);
-              break;
-            case 'entree':
-              previous = $rootScope.findByProp($scope.categories.entrees.items, 'id', message.id);
-              break;
-            case 'main':
-              previous = $rootScope.findByProp($scope.categories.mains.items, 'id', message.id);
-              break;
-            case 'side':
-              previous = $rootScope.findByProp($scope.categories.sides.items, 'id', message.id);
-              break;
-            case 'dessert':
-              previous = $rootScope.findByProp($scope.categories.desserts.items, 'id', message.id);
-              break;
-          }
+          var previous = $rootScope.findByProp($scope.categories[message.previous.category], 'id', message.id);
 
           if(previous) {
-            if(message.data.state === 'served') removeFromBucket(previous);
+            if(message.data.state === 'served') $scope.categories[previous.category].splice($scope.categories[previous.category].indexOf(previous), 1);
             else previous.state = message.data.state;
           }
           $scope.$apply();
           break;
-        //TODO: on destroyed
+        case 'destroyed':
+          if(!message.previous) break;
+          var previous = $rootScope.findByProp($scope.categories[message.previous.category], 'id', message.id);
+          $scope.categories[previous.category].splice($scope.categories[previous.category].indexOf(previous), 1);
+          $scope.$apply();
+          break;
         default: return;
       }
     });
@@ -457,7 +349,12 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
           $scope.customers.push(message.data);
           $scope.$apply();
           break;
-        // TODO: whatever verb gets applied when an order is deleted, removedFrom?
+        case 'removedFrom':
+          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
+          var previous = $rootScope.findByProp(customer.orders, 'id', message.removedId);
+          customer.orders.splice(customer.orders.indexOf(previous),1);
+          $scope.$apply();
+          break;
         default: return;
       }
     });
