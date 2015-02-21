@@ -37,7 +37,7 @@
             <th>Balance</th>
             <th>Operation</th>
           </tr>
-          <tr ng-repeat="customer in customers" ng-show="customer.table == filter.table || !filter.table">
+          <tr ng-repeat="customer in customers | orderBy:'table'" ng-show="customer.table == filter.table || !filter.table">
             <!--<td><input type="checkbox" checklist-model="selectedCustomers" checklist-value="customer"></td>-->
             <td>{{customer.table}}</td>
             <td>{{customer.name}}</td>

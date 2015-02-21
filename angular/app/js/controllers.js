@@ -257,7 +257,8 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
             .success(function(customer) { message.data.customer = customer; })
             .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
 
-          $scope.categories[message.data.category].push(message.data);
+          // http://stackoverflow.com/questions/8668174/indexof-method-in-an-object-array
+          $scope.categories[message.data.category].splice( $scope.categories[message.data.category].map(function(e) { return e.table;}).lastIndexOf(message.data.table) + 1, 0, message.data);
           $scope.$apply();
           break;
         case 'updated':
@@ -285,7 +286,6 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
 }]);
 
 maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter){
-
   $scope.customers = {};
   $scope.menuitems = {};
   $scope.isCheckoutCollapsed = true;
@@ -299,7 +299,7 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
       }
       total += order.menuItem.price;
     });
-    return total;
+    return Number(total).toFixed(2);
   };
 
   $scope.checkout = function(customer){
@@ -335,6 +335,7 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
       .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
     $sails.on('customer', function(message){
+      console.log(message);
       switch (message.verb){
         case 'addedTo':
           var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
@@ -353,6 +354,12 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
           var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
           var previous = $rootScope.findByProp(customer.orders, 'id', message.removedId);
           customer.orders.splice(customer.orders.indexOf(previous),1);
+          $scope.$apply();
+          break;
+        case 'updated':
+          if(!message.previous || !message.data.paidAt) break;
+          var previous = $rootScope.findByProp($scope.customers, 'id', message.id);
+          $scope.customers.splice($scope.customers.indexOf(previous),1);
           $scope.$apply();
           break;
         default: return;
