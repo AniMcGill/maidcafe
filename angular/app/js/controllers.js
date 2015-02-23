@@ -288,6 +288,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
 maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope,$sails,$filter){
   $scope.customers = {};
   $scope.menuitems = {};
+  $scope.orders = {};
   $scope.isCheckoutCollapsed = true;
 
   $scope.getTotal = function (customer){
@@ -334,6 +335,10 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
       .success(function(response){ $scope.menuitems = response;})
       .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
+    $sails.get('/order')
+      .success(function(response){ $scope.orders = response;})
+      .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get orders.'});});
+
     $sails.on('customer', function(message){
       switch (message.verb){
         case 'addedTo':
@@ -365,6 +370,15 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
       }
     });
 
+    $sails.on('order', function(message){
+      if (message.verb === 'updated' && message.data.state === 'served') {
+        var customer = $rootScope.findByProp($scope.customers, 'id', message.previous.customer.id);
+        var order = $rootScope.findByProp(customer.orders, 'id', message.id);
+        order.state = 'served';
+        $scope.$apply();
+      }
+    });
+
   })();
 }]);
 
@@ -372,7 +386,8 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
   $scope.customers = [];
   $scope.orders = [];
 
-  $scope.ordersPerItems = $scope.orders.map(function(o) { return o.menuItem; })
+  $scope.ordersPerItem = function() { return $scope.orders.filter(function(o) { return o.paid; })
+    .map(function(o) { return o.menuItem; })
     .reduce(function(prev, curr){
       if(!(curr.name in prev)) prev.push(prev[curr.name] = {name: curr.name, count: 1, earnings: curr.price});
       else {
@@ -381,10 +396,13 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
       }
       return prev;
     }, [])
-    .sort(function(a,b) { return b.count - a.count; });
+    .sort(function(a,b) { return b.count - a.count; })};
 
-  $scope.totalAmountEarned = function() { return $scope.orders.map(function(o) { return o.menuItem.price; })
+  $scope.totalAmountEarned = function() { return $scope.orders.filter(function(o) { return o.paid;})
+    .map(function(o) { return o.menuItem.price; })
     .reduce(function(prev, curr) { return prev + curr; }, 0)};
+
+
 
   (function() {
     $sails.get('/customer')
@@ -416,6 +434,7 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
     });
 
     $sails.on('order', function(message) {
+      console.log(message);
       if (message.verb === 'created') {
         $sails.get('/menuitem/' + message.data.menuItem)
           .success(function(menuitem) { message.data.menuItem = menuitem;})
@@ -429,6 +448,10 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
         if(!message.previous) return;
         var previous = $rootScope.findByProp($scope.orders, 'id', message.id);
         $scope.orders.splice($scope.orders.indexOf(previous), 1);
+      }
+      else if (message.verb === 'updated' && message.data.paid) {
+        var order = $rootScope.findByProp($scope.orders, 'id', message.id);
+        order.paid = true;
       }
       else return;
       $scope.$apply();

@@ -1,18 +1,88 @@
 <div class="container-fluid">
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-  <p>
-    Total customers: {{ customers.length }}
-  </p>
-  <p>
-    Total orders: {{ orders.length }}
-  </p>
-  <p>
-    Total earnings: {{ totalAmountEarned() | number: 2 }}
-  </p>
-  <p>
-    Average orders: {{ orders.length / customers.length | number: 2 }}
-  </p>
-  <p>
-    Average amount spent: {{ totalAmountEarned() / customers.length | number: 2 }}
-  </p>
+  <div class="row">
+    <div class="col-sm-4 table-responsive">
+      <div class="panel panel-default">
+        <div class="panel-heading"><a ng-click="isOrdersCollapsed = !isOrdersCollapsed">Orders</a></div>
+        <div class="panel-body table-responsive" id="ordersPanel" collapse="isOrdersCollapsed">
+          <table class="table table-hover table-condensed table-striped">
+            <colgroup>
+              <col width="60%">
+              <col width="20%">
+              <col width="20%">
+            </colgroup>
+
+            <tr>
+              <th>Name</th>
+              <th># or orders</th>
+              <th>Earnings</th>
+            </tr>
+
+            <tr ng-repeat="order in ordersPerItem()">
+              <td>{{order.name}}</td>
+              <td>{{order.count}}</td>
+              <td>$ {{order.earnings | number: 2}}</td>
+            </tr>
+            <tr>
+              <td><h4><strong>Total</strong></h4></td>
+              <td><h4><strong>{{ orders.length }}</strong></h4></td>
+              <td><h4><strong>$ {{ totalAmountEarned() | number: 2 }}</strong></h4></td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-2 table-responsive">
+      <div class="panel panel-default">
+        <div class="panel-heading"><a ng-click="isCustomersCollapsed = !isCustomersCollapsed">Customers</a></div>
+        <div class="panel-body table-responsive" id="customersPanel" collapse="isCustomersCollapsed">
+          <table class="table table-hover table-condensed table-striped">
+            <colgroup>
+              <col width="25%">
+              <col width="50%"
+              <col width="25%">
+            </colgroup>
+
+            <tr>
+              <td colspan="2"><strong>Total customers</strong></td>
+              <td><strong>{{ customers.length }}</strong></td>
+            </tr>
+
+            <tr>
+              <td colspan="2">Average orders</td>
+              <td>{{ orders.length / customers.length | number: 2 }}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Min</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Max</td>
+              <td>0</td>
+            </tr>
+
+            <tr>
+              <td colspan="2">Average amount spent</td>
+              <td>{{ totalAmountEarned() / customers.length | number: 2 }}</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Min</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Max</td>
+              <td>0</td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
