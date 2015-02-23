@@ -335,7 +335,6 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
       .error(function(err) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
 
     $sails.on('customer', function(message){
-      console.log(message);
       switch (message.verb){
         case 'addedTo':
           var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
@@ -364,6 +363,75 @@ maidcafeAppControllers.controller('CashierCtrl', ['$scope', '$rootScope','$sails
           break;
         default: return;
       }
+    });
+
+  })();
+}]);
+
+maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails', '$filter', function($scope, $rootScope, $sails, $filter) {
+  $scope.customers = [];
+  $scope.orders = [];
+
+  $scope.ordersPerItems = $scope.orders.map(function(o) { return o.menuItem; })
+    .reduce(function(prev, curr){
+      if(!(curr.name in prev)) prev.push(prev[curr.name] = {name: curr.name, count: 1, earnings: curr.price});
+      else {
+        prev[curr.name].count++;
+        prev[curr.name].earnings += curr.price;
+      }
+      return prev;
+    }, [])
+    .sort(function(a,b) { return b.count - a.count; });
+
+  $scope.totalAmountEarned = function() { return $scope.orders.map(function(o) { return o.menuItem.price; })
+    .reduce(function(prev, curr) { return prev + curr; }, 0)};
+
+  (function() {
+    $sails.get('/customer')
+      .success(function(res) { $scope.customers = res; })
+      .error(function(err) { $rootScope.alerts.push({type: 'warning', msg: 'Could not get customers.'});});
+    $sails.get('/order')
+      .success(function(res) { $scope.orders = res; })
+      .error(function(err) { $rootScope.alerts.push({type: 'warning', msg: 'Could not get orders.'});});
+
+    $sails.on('customer', function(message) {
+      switch(message.verb){
+        case 'created':
+          $scope.customers.push(message.data);
+          break;
+        case 'addedTo':
+          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
+          $sails.get('/order/' + message.addedId)
+            .success(function(order){ customer.orders.push(order);})
+            .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating customers. Please refresh.'});});
+          break;
+        case 'removedFrom':
+          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
+          var previous = $rootScope.findByProp(customer.orders, 'id', message.removedId);
+          customer.orders.splice(customer.orders.indexOf(previous),1);
+          break;
+        default: return;
+      }
+      $scope.$apply();
+    });
+
+    $sails.on('order', function(message) {
+      if (message.verb === 'created') {
+        $sails.get('/menuitem/' + message.data.menuItem)
+          .success(function(menuitem) { message.data.menuItem = menuitem;})
+          .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
+        $sails.get('/customer/' + message.data.customer)
+          .success(function(customer) { message.data.customer = customer; })
+          .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
+        $scope.orders.push(message.data);
+      }
+      else if (message.verb === 'destroyed') {
+        if(!message.previous) return;
+        var previous = $rootScope.findByProp($scope.orders, 'id', message.id);
+        $scope.orders.splice($scope.orders.indexOf(previous), 1);
+      }
+      else return;
+      $scope.$apply();
     });
 
   })();

@@ -15,6 +15,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/maid', {templateUrl: 'views/maid.html', controller: 'MaidCtrl'});
   $routeProvider.when('/kitchen', {templateUrl: 'views/kitchen.html', controller: 'KitchenCtrl'});
   $routeProvider.when('/cashier', {templateUrl: 'views/cashier.html', controller: 'CashierCtrl'});
+  $routeProvider.when('/stats', {templateUrl: 'views/stats.html', controller: 'StatsCtrl'});
   $routeProvider.otherwise({redirectTo: '/main'});
 }]).
 run(function($rootScope) {

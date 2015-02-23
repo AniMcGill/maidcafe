@@ -1,0 +1,18 @@
+<div class="container-fluid">
+  <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+  <p>
+    Total customers: {{ customers.length }}
+  </p>
+  <p>
+    Total orders: {{ orders.length }}
+  </p>
+  <p>
+    Total earnings: {{ totalAmountEarned() | number: 2 }}
+  </p>
+  <p>
+    Average orders: {{ orders.length / customers.length | number: 2 }}
+  </p>
+  <p>
+    Average amount spent: {{ totalAmountEarned() / customers.length | number: 2 }}
+  </p>
+</div>
