@@ -386,75 +386,85 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
   $scope.customers = [];
   $scope.orders = [];
 
-  $scope.ordersPerItem = function() { return $scope.orders.filter(function(o) { return o.paid; })
-    .map(function(o) { return o.menuItem; })
-    .reduce(function(prev, curr){
-      if(!(curr.name in prev)) prev.push(prev[curr.name] = {name: curr.name, count: 1, earnings: curr.price});
-      else {
-        prev[curr.name].count++;
-        prev[curr.name].earnings += curr.price;
-      }
-      return prev;
-    }, [])
-    .sort(function(a,b) { return b.count - a.count; })};
+  $scope.ordersPerItem = [];
 
-  $scope.totalAmountEarned = function() { return $scope.orders.filter(function(o) { return o.paid;})
+  $scope.totalAmountEarned = function() { return $scope.orders
     .map(function(o) { return o.menuItem.price; })
     .reduce(function(prev, curr) { return prev + curr; }, 0)};
 
+  $scope.customerStats = function() {
+    return $scope.customers
+      .map(function(c) {
+        var timeSpent = moment(c.paidAt).diff(c.createdAt, 'minutes', true);
+        return { orders: c.orders.length, timeSpent: timeSpent };
+      })
+      .reduce(function(prev, curr) {
+        prev.minOrders = Math.min(curr.orders, prev.minOrders);
+        prev.maxOrders = Math.max(curr.orders, prev.maxOrders);
+        prev.minTimeSpent = Math.min(curr.timeSpent, prev.minTimeSpent);
+        prev.maxTimeSpent = Math.max(curr.timeSpent, prev.maxTimeSpent);
+        prev.totalTimeSpent += curr.timeSpent;
 
+        return prev;
+      }, {minOrders : Number.MAX_VALUE, maxOrders: 0, minTimeSpent: Number.MAX_VALUE, maxTimeSpent: 0, totalTimeSpent: 0 });
+  };
+
+  $scope.amountPerCustomer = function() { return $scope.orders
+    .map(function(o) { return {id: o.customer.id, amount: o.menuItem.price }; })
+    .reduce(function(prev, curr) {
+      if(!(curr.id in prev)) prev.push(prev[curr.id] = {amount: curr.amount} );
+      else prev[curr.id].amount += curr.amount;
+      return prev;
+    }, [])
+    .reduce(function(prev, curr) {
+      prev.minAmount = Math.min(curr.amount, prev.minAmount);
+      prev.maxAmount = Math.max(curr.amount, prev.maxAmount);
+      return prev;
+    }, {minAmount: Number.MAX_VALUE, maxAmount: 0});
+  };
+
+  var addToAccumulatorArray = function(arr, name, price) {
+    if(!(name in arr)) arr.push(arr[name] = {name: name, count: 1, earnings: price});
+    else {
+      arr[name].count++;
+      arr[name].earnings += price;
+    }
+  };
 
   (function() {
-    $sails.get('/customer')
+    $sails.get('/customer/paidCustomers')
       .success(function(res) { $scope.customers = res; })
-      .error(function(err) { $rootScope.alerts.push({type: 'warning', msg: 'Could not get customers.'});});
-    $sails.get('/order')
-      .success(function(res) { $scope.orders = res; })
-      .error(function(err) { $rootScope.alerts.push({type: 'warning', msg: 'Could not get orders.'});});
+      .error(function() { $rootScope.alerts.push({type: 'warning', msg: 'Could not get customers.'});});
+    $sails.get('/order/paidOrders')
+      .success(function(res) {
+        $scope.orders = res;
+
+        var reducedOrders = [];
+        res.map(function(o) { return {name: o.menuItem.name, price: o.menuItem.price}; })
+          .forEach(function(item) {
+            addToAccumulatorArray(reducedOrders, item.name, item.price);
+          });
+        $scope.ordersPerItem = reducedOrders;
+      })
+      .error(function() { $rootScope.alerts.push({type: 'warning', msg: 'Could not get orders.'});});
 
     $sails.on('customer', function(message) {
-      switch(message.verb){
-        case 'created':
-          $scope.customers.push(message.data);
-          break;
-        case 'addedTo':
-          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
-          $sails.get('/order/' + message.addedId)
-            .success(function(order){ customer.orders.push(order);})
-            .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating customers. Please refresh.'});});
-          break;
-        case 'removedFrom':
-          var customer = $rootScope.findByProp($scope.customers, 'id', message.id);
-          var previous = $rootScope.findByProp(customer.orders, 'id', message.removedId);
-          customer.orders.splice(customer.orders.indexOf(previous),1);
-          break;
-        default: return;
+      if(message.verb === 'updated' && message.data.paidAt != null){
+        $sails.get('/customer/' + message.id)
+          .success(function(customer) { $scope.customers.push(customer); })
+          .error(function() { $rootScope.alerts.push({type: 'warning', msg: 'Could not update customers. Please refresh.'}); });
       }
-      $scope.$apply();
     });
 
     $sails.on('order', function(message) {
-      console.log(message);
-      if (message.verb === 'created') {
-        $sails.get('/menuitem/' + message.data.menuItem)
-          .success(function(menuitem) { message.data.menuItem = menuitem;})
-          .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
-        $sails.get('/customer/' + message.data.customer)
-          .success(function(customer) { message.data.customer = customer; })
-          .error(function(err) {$rootScope.alerts.push({type: 'danger', msg: 'There was a problem updating orders. Please refresh.'});});
-        $scope.orders.push(message.data);
+      if (message.verb === 'updated' && message.data.paid) {
+        $sails.get('/order/' + message.id)
+          .success(function(order) {
+            $scope.orders.push(order);
+            addToAccumulatorArray($scope.ordersPerItem, order.menuItem.name, order.menuItem.price);
+          })
+          .error(function() { $rootScope.alerts.push({ type: 'warning', msg: 'Count not update orders. Please refresh.'}); });
       }
-      else if (message.verb === 'destroyed') {
-        if(!message.previous) return;
-        var previous = $rootScope.findByProp($scope.orders, 'id', message.id);
-        $scope.orders.splice($scope.orders.indexOf(previous), 1);
-      }
-      else if (message.verb === 'updated' && message.data.paid) {
-        var order = $rootScope.findByProp($scope.orders, 'id', message.id);
-        order.paid = true;
-      }
-      else return;
-      $scope.$apply();
     });
 
   })();

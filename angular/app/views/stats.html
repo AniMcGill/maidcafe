@@ -1,10 +1,12 @@
+
+
 <div class="container-fluid">
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
-    <div class="col-sm-4 table-responsive">
+    <div class="col-sm-3 table-responsive">
       <div class="panel panel-default">
-        <div class="panel-heading"><a ng-click="isOrdersCollapsed = !isOrdersCollapsed">Orders</a></div>
-        <div class="panel-body table-responsive" id="ordersPanel" collapse="isOrdersCollapsed">
+        <div class="panel-heading"><a ng-click="isOrdersByCountCollapsed = !isOrdersByCountCollapsed">Orders by count</a></div>
+        <div class="panel-body table-responsive" id="ordersByCountPanel" collapse="isOrdersByCountCollapsed">
           <table class="table table-hover table-condensed table-striped">
             <colgroup>
               <col width="60%">
@@ -18,7 +20,40 @@
               <th>Earnings</th>
             </tr>
 
-            <tr ng-repeat="order in ordersPerItem()">
+            <tr ng-repeat="order in ordersPerItem | orderBy: 'count': true">
+              <td>{{order.name}}</td>
+              <td>{{order.count}}</td>
+              <td>$ {{order.earnings | number: 2}}</td>
+            </tr>
+            <tr>
+              <td><h4><strong>Total</strong></h4></td>
+              <td><h4><strong>{{ orders.length }}</strong></h4></td>
+              <td><h4><strong>$ {{ totalAmountEarned() | number: 2 }}</strong></h4></td>
+            </tr>
+
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3 table-responsive">
+      <div class="panel panel-default">
+        <div class="panel-heading"><a ng-click="isOrdersByEarningsCollapsed = !isOrdersByEarningsCollapsed">Orders by earnings</a></div>
+        <div class="panel-body table-responsive" id="ordersByEarningsPanel" collapse="isOrdersByEarningsCollapsed">
+          <table class="table table-hover table-condensed table-striped">
+            <colgroup>
+              <col width="60%">
+              <col width="20%">
+              <col width="20%">
+            </colgroup>
+
+            <tr>
+              <th>Name</th>
+              <th># or orders</th>
+              <th>Earnings</th>
+            </tr>
+
+            <tr ng-repeat="order in ordersPerItem | orderBy: 'earnings': true">
               <td>{{order.name}}</td>
               <td>{{order.count}}</td>
               <td>$ {{order.earnings | number: 2}}</td>
@@ -41,8 +76,8 @@
           <table class="table table-hover table-condensed table-striped">
             <colgroup>
               <col width="25%">
-              <col width="50%"
-              <col width="25%">
+              <col width="40%">
+              <col width="35%">
             </colgroup>
 
             <tr>
@@ -57,27 +92,42 @@
             <tr>
               <td></td>
               <td>Min</td>
-              <td>0</td>
+              <td>{{ customerStats().minOrders }}</td>
             </tr>
             <tr>
               <td></td>
               <td>Max</td>
-              <td>0</td>
+              <td>{{ customerStats().maxOrders }}</td>
             </tr>
 
             <tr>
               <td colspan="2">Average amount spent</td>
-              <td>{{ totalAmountEarned() / customers.length | number: 2 }}</td>
+              <td>$ {{ totalAmountEarned() / customers.length | number: 2 }}</td>
             </tr>
             <tr>
               <td></td>
               <td>Min</td>
-              <td>0</td>
+              <td>$ {{ amountPerCustomer().minAmount | number: 2 }}</td>
             </tr>
             <tr>
               <td></td>
               <td>Max</td>
-              <td>0</td>
+              <td>$ {{ amountPerCustomer().maxAmount | number: 2 }}</td>
+            </tr>
+
+            <tr>
+              <td colspan="2">Average time stayed</td>
+              <td>{{ customerStats().totalTimeSpent | number: 2 }} m</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Min</td>
+              <td>{{ customerStats().minTimeSpent | number: 2 }} m</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>Max</td>
+              <td>{{ customerStats().maxTimeSpent | number: 2 }} m</td>
             </tr>
 
           </table>

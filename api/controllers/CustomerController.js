@@ -14,6 +14,15 @@ module.exports = {
       Customer.subscribe(req.socket, customers);
       res.json(customers);
     });
+  },
+
+  paidCustomers: function (req, res) {
+    Customer.find({where: { paidAt: {'!': null} }}).populate('orders').exec(function (err, customers) {
+      if(err) return res.serverError(err);
+      Customer.watch(req);
+      Customer.subscribe(req.socket, customers);
+      res.json(customers);
+    });
   }
 
 
