@@ -6,7 +6,6 @@ angular.module('maidcafeApp', [
   'ngSails',
   'ui.bootstrap',
   'checklist-model',
-  'nvd3ChartDirectives',
   'maidcafeApp.controllers',
   'maidcafeApp.version'
 ]).

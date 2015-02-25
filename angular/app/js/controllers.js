@@ -52,6 +52,7 @@ maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','
       (function() {
         $sails.get("/menuitem").success(function (response) {
           response.forEach(function(datum){
+            if(!$scope.categories[datum.category]) $scope.categories[datum.category] = [];
             $scope.categories[datum.category].push(datum);
           });
 
@@ -60,6 +61,7 @@ maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','
         $sails.on('menuitem', function(message){
           switch (message.verb){
             case 'created':
+              if(!$scope.categories[message.data.category]) $scope.categories[message.data.category] = [];
               $scope.categories[message.data.category].push(message.data);
               $scope.$apply();
               break;
@@ -138,6 +140,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
       $sails.get('/menuitem').success(function (response) {
         response.forEach(function (datum){
+          if(!$scope.categories[datum.category]) $scope.categories[datum.category] = [];
           $scope.categories[datum.category].push(datum);
         });
       }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
@@ -241,6 +244,7 @@ maidcafeAppControllers.controller('KitchenCtrl', ['$scope', '$rootScope','$sails
 
       groupedOrders.forEach((function(group) {
         group.forEach(function (subgroup) {
+          if(!$scope.categories[subgroup.category]) $scope.categories[subgroup.category] = [];
           $scope.categories[subgroup.category].push(subgroup);
         });
       }));
@@ -431,11 +435,11 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
     }
   };
 
-  $scope.getItem = function() { return function(d) { return d.name; } };
+  /*$scope.getItem = function() { return function(d) { return d.name; } };
 
   $scope.getSales = function() { return function(d) { return d.count; } };
 
-  $scope.getEarnings = function() { return function(d) { return d.earnings; } };
+  $scope.getEarnings = function() { return function(d) { return d.earnings; } };*/
 
   (function() {
     $sails.get('/customer/paidCustomers')
