@@ -431,6 +431,12 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
     }
   };
 
+  $scope.getItem = function() { return function(d) { return d.name; } };
+
+  $scope.getSales = function() { return function(d) { return d.count; } };
+
+  $scope.getEarnings = function() { return function(d) { return d.earnings; } };
+
   (function() {
     $sails.get('/customer/paidCustomers')
       .success(function(res) { $scope.customers = res; })
