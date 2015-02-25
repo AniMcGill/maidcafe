@@ -52,6 +52,7 @@ maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','
       (function() {
         $sails.get("/menuitem").success(function (response) {
           response.forEach(function(datum){
+            if(!$scope.categories[datum.category]) $scope.categories[datum.category] = [];
             $scope.categories[datum.category].push(datum);
           });
 
@@ -60,6 +61,7 @@ maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','
         $sails.on('menuitem', function(message){
           switch (message.verb){
             case 'created':
+              if(!$scope.categories[message.data.category]) $scope.categories[message.data.category] = [];
               $scope.categories[message.data.category].push(message.data);
               $scope.$apply();
               break;
@@ -94,6 +96,8 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
     };
 
     $scope.createOrder = function(data){
+      console.log('here');
+      console.log(data);
       data.orders.forEach(function(order){
         var orderObject = {
           table: data.table,
@@ -102,6 +106,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
           menuItem: order
         };
         $sails.post('/order/create', orderObject)
+          .success(function(o) { console.log(o);})
           .error(function(err){ $rootScope.alerts.push({type:'danger', msg: 'ERROR: Order not created. Please try again.'});});
       });
 
@@ -138,6 +143,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
 
       $sails.get('/menuitem').success(function (response) {
         response.forEach(function (datum){
+          if(!$scope.categories[datum.category]) $scope.categories[datum.category] = [];
           $scope.categories[datum.category].push(datum);
         });
       }).error(function (response) {$rootScope.alerts.push({type: 'warning', msg: 'Could not get menu.'});});
@@ -190,6 +196,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
       $sails.on('menuitem', function(message){
         switch (message.verb){
           case 'created':
+            if(!$scope.categories[message.data.category]) $scope.categories[message.data.category] = [];
             $scope.categories[message.data.category].push(message.data);
             $scope.$apply();
             break;
