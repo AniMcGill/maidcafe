@@ -1,9 +1,8 @@
 
-
 <div class="container-fluid">
   <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
   <div class="row">
-    <div class="col-sm-3 table-responsive">
+    <div class="col-sm-4 table-responsive">
       <div class="panel panel-default">
         <div class="panel-heading"><a ng-click="isOrdersByCountCollapsed = !isOrdersByCountCollapsed">Orders by count</a></div>
         <div class="panel-body table-responsive" id="ordersByCountPanel" collapse="isOrdersByCountCollapsed">
@@ -36,7 +35,7 @@
       </div>
     </div>
 
-    <div class="col-sm-3 table-responsive">
+    <div class="col-sm-4 table-responsive">
       <div class="panel panel-default">
         <div class="panel-heading"><a ng-click="isOrdersByEarningsCollapsed = !isOrdersByEarningsCollapsed">Orders by earnings</a></div>
         <div class="panel-body table-responsive" id="ordersByEarningsPanel" collapse="isOrdersByEarningsCollapsed">
@@ -69,7 +68,7 @@
       </div>
     </div>
 
-    <div class="col-sm-2 table-responsive">
+    <div class="col-sm-3 table-responsive">
       <div class="panel panel-default">
         <div class="panel-heading"><a ng-click="isCustomersCollapsed = !isCustomersCollapsed">Customers</a></div>
         <div class="panel-body table-responsive" id="customersPanel" collapse="isCustomersCollapsed">
@@ -133,6 +132,11 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <div id="salesPerItemChart"></div>
     </div>
   </div>
 </div>
