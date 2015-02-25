@@ -96,8 +96,6 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
     };
 
     $scope.createOrder = function(data){
-      console.log('here');
-      console.log(data);
       data.orders.forEach(function(order){
         var orderObject = {
           table: data.table,
@@ -439,11 +437,11 @@ maidcafeAppControllers.controller('StatsCtrl', ['$scope', '$rootScope', '$sails'
     }
   };
 
-  /*$scope.getItem = function() { return function(d) { return d.name; } };
+  $scope.getItem = function() { return function(d) { return d.name; } };
 
   $scope.getSales = function() { return function(d) { return d.count; } };
 
-  $scope.getEarnings = function() { return function(d) { return d.earnings; } };*/
+  $scope.getEarnings = function() { return function(d) { return d.earnings; } };
 
   (function() {
     $sails.get('/customer/paidCustomers')
