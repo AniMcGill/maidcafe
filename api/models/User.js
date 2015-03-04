@@ -20,9 +20,11 @@ module.exports = {
       required: true,
       minLength: 6
     },
-    isAdmin:{
-      type: 'boolean',
-      defaultsTo: false
+    accessLevel: {
+      type: 'string',
+      enum: ['maid', 'kitchen', 'cashier', 'admin'],
+      defaultsTo: 'maid',
+      required: true
     },
     toJSON: function(){
       var obj = this.toObject();

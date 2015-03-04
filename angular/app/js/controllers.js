@@ -4,24 +4,21 @@
 
 var maidcafeAppControllers = angular.module('maidcafeApp.controllers', []);
 
-maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$location', function($scope, $location) {
+maidcafeAppControllers.controller('NavBarCtrl', [ '$scope', '$rootScope','$sails', '$location', function($scope, $rootScope, $sails, $location) {
   $scope.isActive = function (location){
     return location === $location.path();
   };
-}]);
-
-maidcafeAppControllers.controller('MainCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope, $sails,$filter){
-  $rootScope.isNavBarVisible = false;
   (function() {
     $sails.get('/login')
       .success(function(data){
-        if(data.user) {
-          $scope.isLoginCollapsed = true;
-          $rootScope.isNavBarVisible = true;
-        }
+        if(!data.user) return;
+        $sails.get('/user/' + data.user).success(function(user) { $rootScope.user = user; });
       });
 
   })();
+}]);
+
+maidcafeAppControllers.controller('MainCtrl', ['$scope', '$rootScope','$sails','$filter', function($scope, $rootScope, $sails,$filter){
 
 }]);
 
@@ -39,6 +36,7 @@ maidcafeAppControllers.controller('MenuCtrl', ['$scope', '$rootScope','$sails','
       $scope.create = function(item){
         io.socket.post('/menuitem/create', item).success(function(data){
           if(data) clearForm();
+          if(typeof data == 'string') $rootScope.alerts.push({type: 'danger', msg: data});
         }).error(function(err){
           $rootScope.alerts.push({type: 'danger', msg: 'ERROR: Item not created. Verify all fields are filled and shortname is unique.'});
         });
@@ -91,7 +89,10 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
         name: item.name
       };
       $sails.post('/customer/create', newCustomerData)
-        .success(function(data){ if(data) clearCustomerForm(); })
+        .success(function(data){
+          if(data) clearCustomerForm();
+          if(typeof data == 'string') $rootScope.alerts.push({type: 'danger', msg: data});
+        })
         .error(function(err){ $rootScope.alerts.push({type:'danger', msg: 'ERROR: Customer not added. Please try again.'});});
     };
 
@@ -104,7 +105,7 @@ maidcafeAppControllers.controller('MaidCtrl', ['$scope','$rootScope', '$sails','
           menuItem: order
         };
         $sails.post('/order/create', orderObject)
-          .success(function(o) { console.log(o);})
+          .success(function(res) { if(typeof res == 'string') $rootScope.alerts.push({type: 'danger', msg: res});})
           .error(function(err){ $rootScope.alerts.push({type:'danger', msg: 'ERROR: Order not created. Please try again.'});});
       });
 

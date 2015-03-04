@@ -40,13 +40,12 @@
       </div>
 
       <div id="mainMenu" collapse="isNavCollapsed" ng-controller="NavBarCtrl">
-        <ul class="nav navbar-nav" ng-show="isNavBarVisible">
-          <!--<li ng-class="{active: isActive('/')}"><a href="#/main">Main</a></li>-->
-          <li ng-class="{active: isActive('/menu')}"><a href="#/menu">Menu</a> </li>
-          <li ng-class="{active: isActive('/maid')}"><a href="#/maid">Maid</a></li>
-          <li ng-class="{active: isActive('/kitchen')}"><a href="#/kitchen">Kitchen</a></li>
-          <li ng-class="{active: isActive('/cashier')}"><a href="#/cashier">Cashier</a></li>
-          <li ng-class="{active: isActive('/stats')}"><a href="#/stats">Stats <small>[beta]</small> </a> </li>
+        <ul class="nav navbar-nav">
+          <li ng-class="{active: isActive('/menu')}" ng-if="user"><a href="#/menu">Menu</a> </li>
+          <li ng-class="{active: isActive('/maid')}" ng-if="user"><a href="#/maid">Maid</a></li>
+          <li ng-class="{active: isActive('/kitchen')}" ng-if="user && user.accessLevel !== 'maid'"><a href="#/kitchen">Kitchen</a></li>
+          <li ng-class="{active: isActive('/cashier')}" ng-if="user && (user.accessLevel === 'cashier' || user.accessLevel === 'admin')"><a href="#/cashier">Cashier</a></li>
+          <li ng-class="{active: isActive('/stats')}" ng-if="user && user.accessLevel === 'admin'"><a href="#/stats">Stats <small>[beta]</small> </a> </li>
         </ul>
 
       </div>

@@ -7,17 +7,6 @@
 
 module.exports = {
 
-  /**
-   * `MenuItemController.update()`
-   */
-  /*update: function (req, res) {
-    MenuItem.update(req.body).done(function(err, item) {
-      res.end(JSON.stringify(item));
-    });
-    *//*return res.json({
-      todo: 'update() is not implemented yet!'
-    });*//*
-  }*/
 
 };
 

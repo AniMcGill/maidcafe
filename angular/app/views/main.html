@@ -5,7 +5,7 @@
     <p>
       Presented by the McGill Students' Anime Club
     </p>
-    <div collapse="isLoginCollapsed">
+    <div ng-if="!user || !user.accessLevel">
       <div class="well">
         <form class="form-inline" method="post" action="/login">
           <label for="usernameInput">Username</label>

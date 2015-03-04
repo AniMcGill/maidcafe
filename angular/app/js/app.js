@@ -20,7 +20,7 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/main'});
 }]).
 run(function($rootScope) {
-    $rootScope.isNavBarVisible = true;
+    //$rootScope.user;
     $rootScope.alerts = [];
     $rootScope.closeAlert = function(index){
       $rootScope.alerts.splice(index, 1);
